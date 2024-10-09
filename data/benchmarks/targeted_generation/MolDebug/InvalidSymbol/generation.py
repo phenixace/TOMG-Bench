@@ -1,0 +1,1 @@
+# randomly introduce invalid symbols to the molecule SMILES
