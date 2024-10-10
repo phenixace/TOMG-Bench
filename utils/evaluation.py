@@ -79,7 +79,7 @@ def mol_prop(mol, prop):
         return sum([atom.GetAtomicNum() == 84 for atom in mol.GetAtoms()])
     
     ## Functional groups
-    elif prop == "num_berzene_rings":
+    elif prop == "num_benzene_ring":
         smarts = '[cX3]1[cX3][cX3][cX3][cX3][cX3]1'
         matches = mol.GetSubstructMatches(Chem.MolFromSmarts(smarts))
         return len(matches)
