@@ -84,9 +84,9 @@ def mol_prop(mol, prop):
         matches = mol.GetSubstructMatches(Chem.MolFromSmarts(smarts))
         return len(matches)
     elif prop == "num_hydroxyl":
-        smarts1 = '[OH]'
-        matches1 = mol.GetSubstructMatches(Chem.MolFromSmarts(smarts1))
-        return len(matches1)
+        smarts = '[OH]'
+        matches = mol.GetSubstructMatches(Chem.MolFromSmarts(smarts))
+        return len(matches)
     elif prop == "num_anhydride":
         smarts = '[CX3](=O)[OX2][CX3](=O)'
         matches = mol.GetSubstructMatches(Chem.MolFromSmarts(smarts))
