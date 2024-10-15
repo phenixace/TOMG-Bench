@@ -36,6 +36,9 @@ parser.add_argument("--seed", type=int, default=42)
 parser.add_argument("--json_check", action="store_true", default=False)
 parser.add_argument("--smiles_check", action="store_true", default=False)
 
+# add a log option to record the output
+parser.add_argument("--log", action="store_true", default=False)
+
 args = parser.parse_args()
 
 if "mistral" in args.model:
@@ -102,6 +105,9 @@ with tqdm(total=len(inference_dataset)-start_pos) as pbar:
                 seed=args.seed
             )
             s = completion.choices[0].message.content
+            if args.log:
+                with open(args.output_dir + args.subtask + ".log", "a+") as f:
+                    f.write(s.replace('\n', ' ').strip() + "\n")
 
             if args.json_check:
                 match = re.search(r'\{.*?\}', s, re.DOTALL)
