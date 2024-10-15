@@ -1,18 +1,32 @@
 from torch.utils.data import Dataset
 import pandas as pd
 
+SYSTEM_HEAD = "You are working as an assistant of a chemist user. Please follow the instruction of the chemist and generate a molecule that satisfies the requirements of the chemist user. You could think step by step, but your final response should be a SMILES string. For example, 'Molecule: [SMILES STRING]'."
+SYSTEM_HEAD_JSON = "You are working as an assistant of a chemist user. Please follow the instruction of the chemist and generate a molecule that satisfies the requirements of the chemist user. Your final response should be a JSON object with the key 'molecule' and the value as a SMILES string. For example, {'molecule': '[SMILES_STRING]'}."
+
 class OMGDataset(Dataset):
-    def __init__(self, maintask, subtask):
-        filename = f'../data/benchmarks/open_generation/{maintask}/{subtask}/test.csv'
-        self.data = pd.read_csv(filename)['Instruction'].tolist()
+    def __init__(self, maintask, subtask, json_check=False):
+        filename = f'./data/benchmarks/open_generation/{maintask}/{subtask}/test.csv'
+        self.data = pd.read_csv(filename)
+        self.readout = self.data["Instruction"].tolist()
+        self.json_check = json_check
 
     def __len__(self):
-        return len(self.data)
+        return len(self.readout)
 
     def __getitem__(self, idx):
-        query = self.data[idx]
-
-        return query
+        query = self.readout[idx]
+        if self.json_check:
+            message = [
+                {"role": "system", "content": SYSTEM_HEAD_JSON},
+                {"role": "user", "content": query},
+            ]
+        else:
+            message = [
+                {"role": "system", "content": SYSTEM_HEAD},
+                {"role": "user", "content": query},
+            ]
+        return message
     
 class TMGDataset(Dataset):
     def __init__(self, data, targets, transform=None):
@@ -69,6 +83,6 @@ class SourceDataset(Dataset):
         return sample, target
     
 if __name__ == '__main__':
-    dataset = OMGDataset('OpenMol', 'AtomNum')
+    dataset = OMGDataset('MolCustom', 'AtomNum')
     print(len(dataset))
     print(dataset[0])
