@@ -9,6 +9,7 @@ import rdkit
 import argparse
 import pandas as pd
 from tqdm import tqdm
+from rdkit import Chem
 from utils.dataset import OMGDataset, TMGDataset
 
 
@@ -33,7 +34,7 @@ parser.add_argument("--max_new_tokens", type=int, default=512)
 parser.add_argument("--seed", type=int, default=42)
 
 parser.add_argument("--json_check", action="store_true", default=False)
-# parser.add_argument("--smiles_check", action="store_true", default=False)
+parser.add_argument("--smiles_check", action="store_true", default=False)
 
 args = parser.parse_args()
 
@@ -109,6 +110,22 @@ with tqdm(total=len(inference_dataset)-start_pos) as pbar:
                     try:
                         json_obj = json.loads(json_str)
                         s = json_obj["molecule"]
+                        # add smiles check
+                        if args.smiles_check:
+                            try:
+                                mol = Chem.MolFromSmiles(s)
+                                if mol is None:
+                                    args.seed += 1
+                                    error_allowance += 1
+                                    if error_allowance > 10:
+                                        error_records.append(idx)
+                                        break
+                            except:
+                                args.seed += 1
+                                error_allowance += 1
+                                if error_allowance > 10:
+                                    error_records.append(idx)
+                                    break
                         break
                     except:
                         # change random seed
