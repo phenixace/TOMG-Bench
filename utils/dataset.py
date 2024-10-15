@@ -2,7 +2,7 @@ from torch.utils.data import Dataset
 import pandas as pd
 
 SYSTEM_HEAD = "You are working as an assistant of a chemist user. Please follow the instruction of the chemist and generate a molecule that satisfies the requirements of the chemist user. You could think step by step, but your final response should be a SMILES string. For example, 'Molecule: [SMILES STRING]'."
-SYSTEM_HEAD_JSON = "You are working as an assistant of a chemist user. Please follow the instruction of the chemist and generate a molecule that satisfies the requirements of the chemist user. Your final response should be a JSON object with the key 'molecule' and the value as a SMILES string. For example, {'molecule': '[SMILES_STRING]'}."
+SYSTEM_HEAD_JSON = "You are working as an assistant of a chemist user. Please follow the instruction of the chemist and generate a molecule that satisfies the requirements of the chemist user. Your final response should be a JSON object with the key 'molecule' and the value as a SMILES string. For example, {\"molecule\": \"[SMILES_STRING]\"}."
 
 class OMGDataset(Dataset):
     def __init__(self, maintask, subtask, json_check=False):
@@ -83,6 +83,6 @@ class SourceDataset(Dataset):
         return sample, target
     
 if __name__ == '__main__':
-    dataset = OMGDataset('MolCustom', 'AtomNum')
+    dataset = OMGDataset('MolCustom', 'AtomNum', json_check=True)
     print(len(dataset))
     print(dataset[0])
