@@ -63,7 +63,6 @@ def calculate_novelty(new_smiles_list):
     return novelties.cpu().numpy()  # 将结果从GPU复制回CPU
 
 
-
 def mol_prop(mol, prop):
     mol = Chem.MolFromSmiles(mol)
     # always remember to check if mol is None
@@ -233,7 +232,43 @@ def mol_prop(mol, prop):
     else:
         raise ValueError(f'Property {prop} not supported')
 
+def calculate_basic_property(smiles, prop):
 
+    if prop == "heavy" or prop == "light":
+        if mol_prop(smiles, 'weight') > 250:
+            return "heavy" == prop
+        else:
+            return "light" == prop
+        
+    elif prop == "complex" or prop == "simple":
+        if mol_prop(smiles, 'ring_count') > 3:
+            if prop == "complex":
+                return True
+        if mol_prop(smiles, 'rot_bonds') > 3:
+            if prop == "complex":
+                return True
+        if mol_prop(smiles, 'num_carbon') > 20:
+            if prop == "complex":
+                return True
+            else:
+                return False
+        else:
+            if prop == "complex":
+                return False
+            else:
+                return True
+    # below requires loading a simple model for prediction
+    elif prop in ["toxic", "non-toxic", "toxicity", "non-toxicity"]:
+        pass
+    elif prop in ["high-boiling", "low-boiling", "high boiling point", "low bioling point"]:
+        pass
+    elif prop in ["high-melting", "low-melting", "high melting point", "low melting point"]:
+        pass
+    elif prop in ["water-soluble", "water-insoluble", "soluble in water", "insoluble in water"]:
+        pass
+    else:
+        raise ValueError(f'Property {prop} not supported')
+    
 if __name__ == '__main__':
     smiles = 'C(=O)OC(=O)C'
 
