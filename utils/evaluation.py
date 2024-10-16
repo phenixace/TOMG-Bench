@@ -7,10 +7,62 @@ from rdkit import DataStructs
 from rdkit.Chem import AllChem
 import os
 import pandas as pd
+import numpy as np
+import torch
 
-data = pd.read_csv("./data/sources/zinc250k/zinc250k_selfies.csv")
-database_mols = data["smiles"].tolist()
-database_mols = [Chem.MolFromSmiles(mol) for mol in database_mols]
+
+def smiles_to_fingerprint(smiles, n_bits=2048):
+    mol = Chem.MolFromSmiles(smiles)
+    return AllChem.GetMorganFingerprintAsBitVect(mol, 2, nBits=n_bits)
+
+def calculate_similarity(smiles1, smiles2):
+    fp1 = smiles_to_fingerprint(smiles1)
+    fp2 = smiles_to_fingerprint(smiles2)
+    return DataStructs.TanimotoSimilarity(fp1, fp2)
+
+# def calculate_novelty(new_smiles_list):
+#     # 将SMILES转换为指纹矩阵
+#     data = pd.read_csv("./data/sources/zinc250k/zinc250k_selfies.csv")
+#     known_smiles_list = data["smiles"].tolist()
+#     known_fps = np.array([smiles_to_fingerprint(smiles) for smiles in known_smiles_list])
+#     new_fps = np.array([smiles_to_fingerprint(smiles) for smiles in new_smiles_list])
+    
+#     # 计算Tanimoto相似度矩阵
+#     similarity_matrix = 1 - pairwise_distances(new_fps, known_fps, metric='jaccard')
+    
+#     # 计算novelty
+#     max_similarities = np.max(similarity_matrix, axis=1)
+#     novelties = 1 - max_similarities
+    
+#     return novelties
+
+# def smiles_to_fingerprint(smiles, n_bits=2048):
+#     mol = Chem.MolFromSmiles(smiles)
+#     return AllChem.GetMorganFingerprintAsBitVect(mol, 2, nBits=n_bits)
+
+def fingerprints_to_tensor(fps):
+    return torch.tensor([list(fp) for fp in fps], dtype=torch.float32)
+
+def calculate_novelty(new_smiles_list):
+    # 将SMILES转换为指纹并转换为PyTorch张量
+    data = pd.read_csv("./data/sources/zinc250k/zinc250k_selfies.csv")
+    known_smiles_list = data["smiles"].tolist()
+    known_fps = fingerprints_to_tensor([smiles_to_fingerprint(smiles) for smiles in known_smiles_list]).cuda()
+    new_fps = fingerprints_to_tensor([smiles_to_fingerprint(smiles) for smiles in new_smiles_list]).cuda()
+    
+    # 计算Tanimoto相似度
+    dot_product = torch.mm(new_fps, known_fps.t())
+    norm_new = new_fps.sum(dim=1).unsqueeze(1)
+    norm_known = known_fps.sum(dim=1).unsqueeze(0)
+    similarity_matrix = dot_product / (norm_new + norm_known - dot_product)
+    
+    # 计算novelty
+    max_similarities, _ = similarity_matrix.max(dim=1)
+    novelties = 1 - max_similarities
+    
+    return novelties.cpu().numpy()  # 将结果从GPU复制回CPU
+
+
 
 def mol_prop(mol, prop):
     mol = Chem.MolFromSmiles(mol)
@@ -50,16 +102,6 @@ def mol_prop(mol, prop):
     elif prop == 'validity':   
         # print(mol)
         return True
-    elif prop == 'novelty':
-        # load zinc as database
-
-        mol_fp = AllChem.GetMorganFingerprintAsBitVect(mol, 2, nBits=1024)
-        novelty_score = []
-        for db_mol in database_mols:
-            db_fp = AllChem.GetMorganFingerprintAsBitVect(db_mol, 2, nBits=1024)
-            score = DataStructs.TanimotoSimilarity(mol_fp, db_fp)
-            novelty_score.append(score)
-        return min(novelty_score)
 
     
     ## Common Atom Counts
