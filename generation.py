@@ -265,16 +265,16 @@ elif args.task == 'MolCustom':
         df = pd.DataFrame(instructions)
         df.to_csv(file_dir + "/test.csv", index=False)
     elif args.subtask == "BondNum":
-        bonds_type = ["single", "double", "triple"]
-        bonds_type_weights = [1, 1, 1]
+        bonds_type = ["single", "double", "triple", "rotatable", "aromatic"]
+        bonds_type_weights = [5, 4, 3, 1, 1]
         
-        bonds_num = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-        bonds_num_weights = [10, 5, 2, 1, 1, 1, 1, 1, 1, 1]
+        bonds_num = [1, 2, 3, 4, 5]
+        bonds_num_weights = [10, 5, 2, 1, 1]
 
 
         prompt_templates = ["Please generate a molecule with ", "Please generate a molecule composed of ", "Please generate a molecule consisting ", "The molecule has ", "The molecule is composed of ", "The molecule consists of ", "There is a molecule with ", "There is a molecule composed of ", "There is a molecule consisting of ", "The molecule contains "]
 
-        instructions = {"Instruction":[], "single":[], "double":[], "triple":[]}
+        instructions = {"Instruction":[], "single":[], "double":[], "triple":[], "rotatable":[], "aromatic":[]}
         i = 0
         while i < 5000:
             candidate = random.choice(prompt_templates)
@@ -283,11 +283,17 @@ elif args.task == 'MolCustom':
             other_bonds_num_weights = [int(10/(item)) for item in other_bonds_num]
             other_bonds = random.choices(other_bonds_num, other_bonds_num_weights, k=1)[0]
 
-            temp_bonds_dict = {"single":0, "double":0, "triple":0}
+            temp_bonds_dict = {"single":0, "double":0, "triple":0, "rotatable":0, "aromatic":0}
 
             if other_bonds == 1:
                 bond = random.choices(bonds_type, bonds_type_weights, k=1)[0]
-                bond_num = random.choices(bonds_num, bonds_num_weights, k=1)[0]
+                if bond == "aromatic":
+                    bond_num = random.choices([5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20], [5, 20, 5, 5, 5, 1, 5, 1, 5, 1, 1, 1, 1, 1, 1], k=1)[0]
+                elif bond == "single":
+                    bond_num = random.randint(1, 50)
+                else:
+                    bond_num = random.choices(bonds_num, bonds_num_weights, k=1)[0]
+
                 temp_bonds_dict[bond] = bond_num
                 if bond_num == 1:
                     candidate += str(bond_num) + " " + bond + " bond."
@@ -295,7 +301,16 @@ elif args.task == 'MolCustom':
                     candidate += str(bond_num) + " " + bond + " bonds."
             else:
                 temp_bonds = random.choices(bonds_type, bonds_type_weights, k=other_bonds)
-                temp_bonds_num = random.choices(bonds_num, bonds_num_weights, k=other_bonds)
+                
+                temp_bonds_num = []
+                for j in range(other_bonds):
+                    if temp_bonds[j] == "aromatic":
+                        temp_bonds_num.append(random.choices([5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20], [5, 20, 5, 5, 5, 1, 5, 1, 5, 1, 1, 1, 1, 1, 1], k=1)[0])
+                    elif temp_bonds[j] == "single":
+                        temp_bonds_num.append(random.randint(1, 100))
+                    else:
+                        temp_bonds_num.append(random.choices(bonds_num, bonds_num_weights, k=1)[0])
+                
                 for j in range(len(temp_bonds)):
                     if j == other_bonds - 1:
                         if temp_bonds_num[j] == 1:
