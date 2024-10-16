@@ -169,11 +169,84 @@ if args.benchmark == "open_generation":
 
     elif args.task == "MolOpt":
         if args.subtask == "LogP":
-            pass
+            valid_molecules = []
+            successed = []
+            similarities = []
+            for idx in tqdm(range(len(data))):
+                raw = data["molecule"][idx]
+                target_mol = target["outputs"][idx]
+                instruction = data["Instruction"][idx]
+                if mol_prop(target_mol, "validity"):
+                    valid_molecules.append(target_mol)
+                    similarities.append(calculate_similarity(raw, target_mol))
+                    if "lower" in instruction or "decrease" in instruction:
+                        if mol_prop(target_mol, "logP") < mol_prop(raw, "logP"):
+                            successed.append(1)
+                        else:
+                            successed.append(0)
+                    else:
+                        if mol_prop(target_mol, "logP") > mol_prop(raw, "logP"):
+                            successed.append(1)
+                        else:
+                            successed.append(0)
+                else:
+                    successed.append(0)
+            print("Success Rate:", sum(successed) / len(successed))
+            print("Similarity:", sum(similarities) / len(similarities))
+            print("Validty:", len(valid_molecules) / len(data))
+
         elif args.subtask == "MR":
-            pass
+            valid_molecules = []
+            successed = []
+            similarities = []
+            for idx in tqdm(range(len(data))):
+                raw = data["molecule"][idx]
+                target_mol = target["outputs"][idx]
+                instruction = data["Instruction"][idx]
+                if mol_prop(target_mol, "validity"):
+                    valid_molecules.append(target_mol)
+                    similarities.append(calculate_similarity(raw, target_mol))
+                    if "lower" in instruction or "decrease" in instruction:
+                        if mol_prop(target_mol, "MR") < mol_prop(raw, "MR"):
+                            successed.append(1)
+                        else:
+                            successed.append(0)
+                    else:
+                        if mol_prop(target_mol, "MR") > mol_prop(raw, "MR"):
+                            successed.append(1)
+                        else:
+                            successed.append(0)
+                else:
+                    successed.append(0)
+            print("Success Rate:", sum(successed) / len(successed))
+            print("Similarity:", sum(similarities) / len(similarities))
+            print("Validty:", len(valid_molecules) / len(data))
         elif args.subtask == "QED":
-            pass
+            valid_molecules = []
+            successed = []
+            similarities = []
+            for idx in tqdm(range(len(data))):
+                raw = data["molecule"][idx]
+                target_mol = target["outputs"][idx]
+                instruction = data["Instruction"][idx]
+                if mol_prop(target_mol, "validity"):
+                    valid_molecules.append(target_mol)
+                    similarities.append(calculate_similarity(raw, target_mol))
+                    if "lower" in instruction or "decrease" in instruction:
+                        if mol_prop(target_mol, "qed") < mol_prop(raw, "qed"):
+                            successed.append(1)
+                        else:
+                            successed.append(0)
+                    else:
+                        if mol_prop(target_mol, "qed") > mol_prop(raw, "qed"):
+                            successed.append(1)
+                        else:
+                            successed.append(0)
+                else:
+                    successed.append(0)
+            print("Success Rate:", sum(successed) / len(successed))
+            print("Similarity:", sum(similarities) / len(similarities))
+            print("Validty:", len(valid_molecules) / len(data))
 elif args.benchmark == "targeted_generation":
     pass
 else:
