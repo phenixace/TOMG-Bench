@@ -3,12 +3,21 @@ from rdkit import RDConfig
 from rdkit.Chem import Descriptors
 from rdkit.Chem import Draw
 from rdkit.Chem import FragmentCatalog
+from rdkit import DataStructs
+from rdkit.Chem import AllChem
 import os
+import pandas as pd
 
+data = pd.read_csv("./data/sources/zinc250k/zinc250k_selfies.csv")
+database_mols = data["smiles"].tolist()
+database_mols = [Chem.MolFromSmiles(mol) for mol in database_mols]
 
 def mol_prop(mol, prop):
     mol = Chem.MolFromSmiles(mol)
-
+    # always remember to check if mol is None
+    if mol is None:
+        return None
+    
     ## Basic Properties
     if prop == 'logP':
         return Descriptors.MolLogP(mol)
@@ -38,28 +47,39 @@ def mol_prop(mol, prop):
         return Descriptors.MolMR(mol)
 
     ## If Molecule is valid
-    elif prop == 'valid':   
+    elif prop == 'validity':   
         # print(mol)
-        return bool(mol)
+        return True
+    elif prop == 'novelty':
+        # load zinc as database
+
+        mol_fp = AllChem.GetMorganFingerprintAsBitVect(mol, 2, nBits=1024)
+        novelty_score = []
+        for db_mol in database_mols:
+            db_fp = AllChem.GetMorganFingerprintAsBitVect(db_mol, 2, nBits=1024)
+            score = DataStructs.TanimotoSimilarity(mol_fp, db_fp)
+            novelty_score.append(score)
+        return min(novelty_score)
+
     
     ## Common Atom Counts
-    elif prop == 'num_carbons':
+    elif prop == 'num_carbon':
         return sum([atom.GetAtomicNum() == 6 for atom in mol.GetAtoms()])
-    elif prop == 'num_nitrogens':
+    elif prop == 'num_nitrogen':
         return sum([atom.GetAtomicNum() == 7 for atom in mol.GetAtoms()])
-    elif prop == 'num_oxygens':
+    elif prop == 'num_oxygen':
         return sum([atom.GetAtomicNum() == 8 for atom in mol.GetAtoms()])
-    elif prop == 'num_fluorines':
+    elif prop == 'num_fluorine':
         return sum([atom.GetAtomicNum() == 9 for atom in mol.GetAtoms()])
     elif prop == 'num_phosphorus':
         return sum([atom.GetAtomicNum() == 15 for atom in mol.GetAtoms()])
-    elif prop == 'num_sulfurs':
+    elif prop == 'num_sulfur':
         return sum([atom.GetAtomicNum() == 16 for atom in mol.GetAtoms()])
-    elif prop == 'num_chlorines':
+    elif prop == 'num_chlorine':
         return sum([atom.GetAtomicNum() == 17 for atom in mol.GetAtoms()])
-    elif prop == 'num_bromines':
+    elif prop == 'num_bromine':
         return sum([atom.GetAtomicNum() == 35 for atom in mol.GetAtoms()])
-    elif prop == 'num_iodines':
+    elif prop == 'num_iodine':
         return sum([atom.GetAtomicNum() == 53 for atom in mol.GetAtoms()])
     elif prop == "num_boron":
         return sum([atom.GetAtomicNum() == 5 for atom in mol.GetAtoms()])
@@ -67,7 +87,7 @@ def mol_prop(mol, prop):
         return sum([atom.GetAtomicNum() == 14 for atom in mol.GetAtoms()])
     elif prop == "num_selenium":
         return sum([atom.GetAtomicNum() == 34 for atom in mol.GetAtoms()])
-    elif prop == "num_telurium":
+    elif prop == "num_tellurium":
         return sum([atom.GetAtomicNum() == 52 for atom in mol.GetAtoms()])
     elif prop == "num_arsenic":
         return sum([atom.GetAtomicNum() == 33 for atom in mol.GetAtoms()])

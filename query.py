@@ -105,6 +105,8 @@ with tqdm(total=len(inference_dataset)-start_pos) as pbar:
                 seed=args.seed
             )
             s = completion.choices[0].message.content
+            s = s.replace('""', '"').strip()
+            
             if args.log:
                 with open(args.output_dir + args.subtask + ".log", "a+") as f:
                     f.write(s.replace('\n', ' ').strip() + "\n")
