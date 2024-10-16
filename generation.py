@@ -264,6 +264,58 @@ elif args.task == 'MolCustom':
                 i += 1
         df = pd.DataFrame(instructions)
         df.to_csv(file_dir + "/test.csv", index=False)
+    elif args.subtask == "BondNum":
+        bonds_type = ["single", "double", "triple"]
+        bonds_type_weights = [1, 1, 1]
+        
+        bonds_num = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        bonds_num_weights = [10, 5, 2, 1, 1, 1, 1, 1, 1, 1]
+
+
+        prompt_templates = ["Please generate a molecule with ", "Please generate a molecule composed of ", "Please generate a molecule consisting ", "The molecule has ", "The molecule is composed of ", "The molecule consists of ", "There is a molecule with ", "There is a molecule composed of ", "There is a molecule consisting of ", "The molecule contains "]
+
+        instructions = {"Instruction":[], "single":[], "double":[], "triple":[]}
+        i = 0
+        while i < 5000:
+            candidate = random.choice(prompt_templates)
+
+            other_bonds_num = [item for item in range(1, 5)]
+            other_bonds_num_weights = [int(10/(item)) for item in other_bonds_num]
+            other_bonds = random.choices(other_bonds_num, other_bonds_num_weights, k=1)[0]
+
+            temp_bonds_dict = {"single":0, "double":0, "triple":0}
+
+            if other_bonds == 1:
+                bond = random.choices(bonds_type, bonds_type_weights, k=1)[0]
+                bond_num = random.choices(bonds_num, bonds_num_weights, k=1)[0]
+                temp_bonds_dict[bond] = bond_num
+                if bond_num == 1:
+                    candidate += str(bond_num) + " " + bond + " bond."
+                else:
+                    candidate += str(bond_num) + " " + bond + " bonds."
+            else:
+                temp_bonds = random.choices(bonds_type, bonds_type_weights, k=other_bonds)
+                temp_bonds_num = random.choices(bonds_num, bonds_num_weights, k=other_bonds)
+                for j in range(len(temp_bonds)):
+                    if j == other_bonds - 1:
+                        if temp_bonds_num[j] == 1:
+                            candidate += "and " + str(temp_bonds_num[j]) + " " + temp_bonds[j] + " bond."
+                        else:
+                            candidate += "and " + str(temp_bonds_num[j]) + " " + temp_bonds[j] + " bonds."
+                    else:
+                        if temp_bonds_num[j] == 1:
+                            candidate += str(temp_bonds_num[j]) + " " + temp_bonds[j] + " bond, "
+                        else:
+                            candidate += str(temp_bonds_num[j]) + " " + temp_bonds[j] + " bonds, "
+                    temp_bonds_dict[temp_bonds[j]] = temp_bonds_num[j]
+
+            if candidate not in instructions["Instruction"]:
+                instructions["Instruction"].append(candidate)
+                for key in temp_bonds_dict.keys():
+                    instructions[key].append(temp_bonds_dict[key])
+                i += 1
+        df = pd.DataFrame(instructions)
+        df.to_csv(file_dir + "/test.csv", index=False)
 elif args.task == "MolOpt":
     if args.subtask == 'LogP':
         prompt_templates = ["Please optimize the molecule {} to have a lower LogP value.", "Modify the molecule {} to decrease its LogP value.", "Optimize the molecule {} to have a lower LogP value.", "Please modify the molecule {} to decrease its LogP value.", "Modify the molecule {} to have a lower LogP value.",
