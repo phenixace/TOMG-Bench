@@ -3,7 +3,7 @@ For evaluation
 '''
 import argparse
 import pandas as pd
-from utils.evaluation import mol_prop, calculate_novelty, calculate_similarity, calculate_baisc_property
+from utils.evaluation import mol_prop, calculate_novelty, calculate_similarity, calculate_basic_property
 from tqdm import tqdm
 
 
@@ -36,18 +36,21 @@ if args.benchmark == "open_generation":
             
             # use tqdm to show the progress
             for idx in tqdm(range(len(data))):
-                flag = 1
-                for atom in atom_type:
-                    if mol_prop(target["outputs"][idx], "num_" + atom) != int(data[atom][idx]):
-                        flag = 0
-                        break
-                flags.append(flag)
+                if mol_prop(target["outputs"][idx], "validity"):
+                    valid_molecules.append(target["outputs"][idx])
+                    flag = 1
+                    for atom in atom_type:
+                        if mol_prop(target["outputs"][idx], "num_" + atom) != int(data[atom][idx]):
+                            flag = 0
+                            break
+                    flags.append(flag)
+                else:
+                    flags.append(0)
                 # Novelty
                 # novelty = mol_prop(target["outputs"][idx], "novelty")
                 # if novelty is not None:
                 #     novelties.append(novelty)
-                if mol_prop(target["outputs"][idx], "validity"):
-                    valid_molecules.append(target["outputs"][idx])
+                
             
             
             print("Accuracy: ", sum(flags) / len(flags))
@@ -80,19 +83,49 @@ if args.benchmark == "open_generation":
             flags = []
             valid_molecules = []
             for idx in tqdm(range(len(data))):
-                flag = 1
-                for group in functional_groups:
-                    if group == "benzene rings":
-                        if mol_prop(target["outputs"][idx], "num_benzene_ring") != int(data[group][idx]):
-                            flag = 0
-                            break
-                    else:
-                        if mol_prop(target["outputs"][idx], "num_" + group) != int(data[group][idx]):
-                            flag = 0
-                            break
-                flags.append(flag)
                 if mol_prop(target["outputs"][idx], "validity"):
                     valid_molecules.append(target["outputs"][idx])
+                    flag = 1
+                    for group in functional_groups:
+                        if group == "benzene rings":
+                            if mol_prop(target["outputs"][idx], "num_benzene_ring") != int(data[group][idx]):
+                                flag = 0
+                                break
+                        else:
+                            if mol_prop(target["outputs"][idx], "num_" + group) != int(data[group][idx]):
+                                flag = 0
+                                break
+                    flags.append(flag)
+                else:
+                    flags.append(0)
+                
+                
+            print("Accuracy: ", sum(flags) / len(flags))
+            print("Validty:", len(valid_molecules) / len(flags))
+            if args.calc_novelty:
+                novelties = calculate_novelty(valid_molecules)
+                print("Novelty: ", sum(novelties) / len(novelties))
+
+        elif args.subtask == "BondNum":
+            bonds_type = ['single', 'double', 'triple', 'rotatable', 'aromatic']
+            flags = []
+            valid_molecules = []
+            for idx in tqdm(range(len(data))):
+                if mol_prop(target["outputs"][idx], "validity"):
+                    valid_molecules.append(target["outputs"][idx])
+                    flag = 1
+                    for bond in bonds_type:
+                        if bond == "rotatable":
+                            if mol_prop(target["outputs"][idx], "rot_bonds") != int(data[bond][idx]):
+                                flag = 0
+                                break
+                        else:
+                            if mol_prop(target["outputs"][idx], "num_" + bond + "_bonds") != int(data[bond][idx]):
+                                flag = 0
+                                break
+                    flags.append(flag)
+                else:
+                    flags.append(0)
                 
             print("Accuracy: ", sum(flags) / len(flags))
             print("Validty:", len(valid_molecules) / len(flags))
