@@ -101,6 +101,17 @@ def mol_prop(mol, prop):
     elif prop == 'validity':   
         # print(mol)
         return True
+    
+    ## Bond Counts
+    elif prop == 'num_single_bonds':
+        return sum([bond.GetBondType() == Chem.rdchem.BondType.SINGLE for bond in mol.GetBonds()])
+    elif prop == 'num_double_bonds':
+        return sum([bond.GetBondType() == Chem.rdchem.BondType.DOUBLE for bond in mol.GetBonds()])
+    elif prop == 'num_triple_bonds':
+        return sum([bond.GetBondType() == Chem.rdchem.BondType.TRIPLE for bond in mol.GetBonds()])
+    elif prop == 'num_aromatic_bonds':
+        return sum([bond.GetBondType() == Chem.rdchem.BondType.AROMATIC for bond in mol.GetBonds()])
+    
 
     
     ## Common Atom Counts
@@ -272,4 +283,4 @@ def calculate_basic_property(smiles, prop):
 if __name__ == '__main__':
     smiles = 'C(=O)OC(=O)C'
 
-    print(mol_prop(smiles, 'num_anhydride'))
+    print(mol_prop(smiles, 'num_aromatic_bonds'))
