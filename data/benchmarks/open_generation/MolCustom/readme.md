@@ -38,3 +38,15 @@ Target: Let the LLM generate the customized molecule. Match if the generated mol
     - **Success Rate (MAIN)**: The percentage of generated molecules that meet the requirements. 
     - **Molecule Novelty**: The percentage of generated molecules that are novel.
     - **Molecule Validity**: The percentage of generated molecules that are valid.
+
+#### BondNum
+- **Description**: The generated molecule should contain the specified number of bonds.
+- **Input**: The instruction that specifies the number of bonds in the generated molecule.
+- **Output**: The molecule SMILES
+- **Example**: 
+  - Input: `Please generate a molecule with 1 single bond.`
+  - Output: `CC`
+- **Evaluation Metrics**:
+    - **Success Rate (MAIN)**: The percentage of generated molecules that meet the requirements. 
+    - **Molecule Novelty**: The percentage of generated molecules that are novel.
+    - **Molecule Validity**: The percentage of generated molecules that are valid.

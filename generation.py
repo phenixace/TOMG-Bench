@@ -1,6 +1,7 @@
 from argparse import ArgumentParser
 import random
 import pandas as pd
+import copy
 from utils.evaluation import mol_prop
 
 
@@ -11,6 +12,17 @@ parser.add_argument("--seed", type=int, default=42)
 args = parser.parse_args()
 
 random.seed(args.seed)
+
+def sample_with_weights(population, raw_weights, sample_size):
+    weights = copy.deepcopy(raw_weights)
+    sample = []
+    while len(sample) < sample_size:
+        chosen = random.choices(population, weights=weights, k=1)[0]
+        if chosen not in sample:
+            sample.append(chosen)
+            # set the weight of the chosen item to 0
+            weights[population.index(chosen)] = 0
+    return sample
 
 file_dir = f'./data/benchmarks/open_generation/{args.task}/{args.subtask}/'
 
@@ -130,7 +142,7 @@ if args.task == "MolEdit":
         df = pd.DataFrame(Instructions)
         df.to_csv(file_dir + "/test.csv", index=False)
 elif args.task == 'MolCustom':
-    if args.subtask == 'AtomNum':
+    if args.subtask == 'AtomNum':  # dataset needs to be update
         elements = ["oxygen", "nitrogen", "sulfur", "fluorine", "chlorine", "bromine", "iodine", "phosphorus", "boron", "silicon", "selenium", "tellurium", "arsenic", "antimony", "bismuth", "polonium"]
         elements_weights = [5, 3, 3, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 
@@ -160,8 +172,9 @@ elif args.task == 'MolCustom':
                 Other_elements_dict[element] = element_num
             else:
                 candidate += ", "
-                temp_elements = random.choices(elements, elements_weights, k=other_elements)
-                temp_elements_num = random.choices(elements_num, elements_num_weights, k=other_elements)
+                temp_elements = sample_with_weights(elements, elements_weights, other_elements)
+                
+                temp_elements_num = sample_with_weights(elements_num, elements_num_weights, other_elements)
                 for j in range(len(temp_elements)):
                     if j == other_elements - 1:
                         candidate += "and " + str(temp_elements_num[j]) + " " + temp_elements[j] + " atoms."
@@ -197,13 +210,15 @@ elif args.task == 'MolCustom':
             props = []
             if adj_or_noun == 0:
                 box = [0,1,2,3]
-                cur_prop = random.choices(box, k=num_prop)
+                box_weights = [1, 1, 1, 1]
+                cur_prop = sample_with_weights(box, box_weights, num_prop)
                 for j in range(num_prop):
                     pos_neg = random.randint(0, 1)
                     props.append(prop_noun[2*cur_prop[j] + pos_neg])
             else:
                 box = [0,1,2,3,4,5]
-                cur_prop = random.choices(box, k=num_prop)
+                box_weights = [1, 1, 1, 1, 1, 1]
+                cur_prop = sample_with_weights(box, box_weights, num_prop)
                 for j in range(num_prop):
                     pos_neg = random.randint(0, 1)
                     props.append(prop_adj[2*cur_prop[j] + pos_neg])
@@ -248,8 +263,8 @@ elif args.task == 'MolCustom':
                 temp_groups_dict[group] = group_num
                 candidate += str(group_num) + " " + group + " groups."
             else:
-                temp_groups = random.choices(groups, groups_weights, k=other_groups)
-                temp_groups_num = random.choices(groups_num, groups_num_weights, k=other_groups)
+                temp_groups = sample_with_weights(groups, groups_weights, other_groups)
+                temp_groups_num = sample_with_weights(groups_num, groups_num_weights, other_groups)
                 for j in range(len(temp_groups)):
                     if j == other_groups - 1:
                         candidate += "and " + str(temp_groups_num[j]) + " " + temp_groups[j] + " groups."
@@ -300,8 +315,9 @@ elif args.task == 'MolCustom':
                 else:
                     candidate += str(bond_num) + " " + bond + " bonds."
             else:
-                temp_bonds = random.choices(bonds_type, bonds_type_weights, k=other_bonds)
-                
+            
+                temp_bonds = sample_with_weights(bonds_type, bonds_type_weights, other_bonds)
+
                 temp_bonds_num = []
                 for j in range(other_bonds):
                     if temp_bonds[j] == "aromatic":

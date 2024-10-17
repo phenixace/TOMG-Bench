@@ -106,7 +106,7 @@ with tqdm(total=len(inference_dataset)-start_pos) as pbar:
             )
             s = completion.choices[0].message.content
             s = s.replace('""', '"').strip()
-            
+            print(s)
             if args.log:
                 with open(args.output_dir + args.subtask + ".log", "a+") as f:
                     f.write(s.replace('\n', ' ').strip() + "\n")
@@ -152,7 +152,7 @@ with tqdm(total=len(inference_dataset)-start_pos) as pbar:
                         break
             else:
                 break
-        print(s)
+            print("Checked", s)
 
         df = pd.DataFrame([s.strip()], columns=["outputs"])
         df.to_csv(args.output_dir +  args.subtask + ".csv", mode='a', header=False, index=False)

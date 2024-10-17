@@ -12,8 +12,8 @@ parser.add_argument("--name", type=str, default="llama3-70B")
 
 # dataset settings
 parser.add_argument("--benchmark", type=str, default="open_generation")
-parser.add_argument("--task", type=str, default="MolCustom")
-parser.add_argument("--subtask", type=str, default="AtomNum")
+parser.add_argument("--task", type=str, default="MolOpt")
+parser.add_argument("--subtask", type=str, default="LogP")
 
 parser.add_argument("--output_dir", type=str, default="./predictions/")
 parser.add_argument("--calc_novelty", action="store_true", default=False)
