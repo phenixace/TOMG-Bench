@@ -153,7 +153,7 @@ with tqdm(total=len(inference_dataset)-start_pos) as pbar:
             else:
                 break
             print("Checked", s)
-
+        s = s.replace('\n', ' ').strip()
         df = pd.DataFrame([s.strip()], columns=["outputs"])
         df.to_csv(args.output_dir +  args.subtask + ".csv", mode='a', header=False, index=False)
         # with open(args.output_dir + "/output_" + args.task + ".txt", "a+") as f:
