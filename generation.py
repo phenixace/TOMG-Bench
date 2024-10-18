@@ -413,6 +413,17 @@ elif args.task == "MolOpt":
     #     pass
         
 elif args.task == "InstructionTuning":
+    # TODO: extract molecules from the PubChem dataset that are not contained in the zinc dataset
+    # Then calculate the properties of the molecules and generate instructions for the molecules
+    # For properties, we can consider the following:
+    # - logP
+    # - MR
+    # - QED
+    # But how to build the instruction tuning dataset?
+    # - We could randomly but simply edit the molecule structure by adding or removing a functional group
+    # - Then we check the properties of the molecule and generate the instruction
     pass
 elif args.task == "PPO":
+    # TODO: the instruction following is also considered.
+    # How reward is built?
     pass
