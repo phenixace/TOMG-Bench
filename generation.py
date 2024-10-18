@@ -411,3 +411,8 @@ elif args.task == "MolOpt":
         df.to_csv(file_dir + "/test.csv", index=False)
     # elif args.subtask == 'TPSA':
     #     pass
+        
+elif args.task == "InstructionTuning":
+    pass
+elif args.task == "PPO":
+    pass

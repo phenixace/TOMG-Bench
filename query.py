@@ -94,19 +94,40 @@ with tqdm(total=len(inference_dataset)-start_pos) as pbar:
     for idx in range(start_pos, len(inference_dataset)):
         error_allowance = 0
         while True:
-            completion = client.chat.completions.create(
-                model=args.model,
-                messages=inference_dataset[idx],
-                max_tokens=args.max_new_tokens,
-                temperature=args.temperature,
-                top_p=args.top_p,
-                n=args.num_return_sequences,
-                stop=["</s>", "<|end_of_text|>", "<|eot_id|>"],
-                seed=args.seed
-            )
-            s = completion.choices[0].message.content
+            try:
+                completion = client.chat.completions.create(
+                    model=args.model,
+                    messages=inference_dataset[idx],
+                    max_tokens=args.max_new_tokens,
+                    temperature=args.temperature,
+                    top_p=args.top_p,
+                    n=args.num_return_sequences,
+                    stop=["</s>", "<|end_of_text|>", "<|eot_id|>"],
+                    seed=args.seed
+                )
+                s = completion.choices[0].message.content
+            except:
+                # change random seed
+                args.seed += 1
+                error_allowance += 1
+                if error_allowance > 10:
+                    error_records.append(idx)
+                    break
+                else:
+                    continue
+            
             s = s.replace('""', '"').strip()
-            print(s)
+            print("Raw:", s)
+
+            if s == None:
+                args.seed += 1
+                error_allowance += 1
+                if error_allowance > 10:
+                    error_records.append(idx)
+                    break
+                else:
+                    continue
+
             if args.log:
                 with open(args.output_dir + args.subtask + ".log", "a+") as f:
                     f.write(s.replace('\n', ' ').strip() + "\n")
@@ -128,12 +149,16 @@ with tqdm(total=len(inference_dataset)-start_pos) as pbar:
                                     if error_allowance > 10:
                                         error_records.append(idx)
                                         break
+                                    else:
+                                        continue
                             except:
                                 args.seed += 1
                                 error_allowance += 1
                                 if error_allowance > 10:
                                     error_records.append(idx)
                                     break
+                                else:
+                                    continue
                         break
                     except:
                         # change random seed
@@ -142,6 +167,8 @@ with tqdm(total=len(inference_dataset)-start_pos) as pbar:
                         if error_allowance > 10:
                             error_records.append(idx)
                             break
+                        else:
+                            continue
 
                 else:
                     # change random seed
@@ -150,10 +177,16 @@ with tqdm(total=len(inference_dataset)-start_pos) as pbar:
                     if error_allowance > 10:
                         error_records.append(idx)
                         break
+                    else:
+                        continue
             else:
                 break
-            print("Checked", s)
+        print("Checked:", s)
+
+        if s is None:
+            s = ""
         s = s.replace('\n', ' ').strip()
+
         df = pd.DataFrame([s.strip()], columns=["outputs"])
         df.to_csv(args.output_dir +  args.subtask + ".csv", mode='a', header=False, index=False)
         # with open(args.output_dir + "/output_" + args.task + ".txt", "a+") as f:
