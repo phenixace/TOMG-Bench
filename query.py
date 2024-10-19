@@ -185,10 +185,10 @@ with tqdm(total=len(inference_dataset)-start_pos) as pbar:
 
         if s is None:
             s = ""
-        s = s.replace('\n', ' ').strip()
+        # s = s.replace('\n', ' ').strip()
 
         df = pd.DataFrame([s.strip()], columns=["outputs"])
-        df.to_csv(args.output_dir +  args.subtask + ".csv", mode='a', header=False, index=False)
+        df.to_csv(args.output_dir +  args.subtask + ".csv", mode='a', header=False, index=True)
         # with open(args.output_dir + "/output_" + args.task + ".txt", "a+") as f:
         #     f.write(s.replace('\n', ' ').strip() + "\n")
         pbar.update(1)
