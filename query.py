@@ -90,8 +90,10 @@ print("==============================")
 
 error_records = []
 
+
 with tqdm(total=len(inference_dataset)-start_pos) as pbar:
     for idx in range(start_pos, len(inference_dataset)):
+        cur_seed = args.seed
         error_allowance = 0
         while True:
             try:
@@ -103,12 +105,12 @@ with tqdm(total=len(inference_dataset)-start_pos) as pbar:
                     top_p=args.top_p,
                     n=args.num_return_sequences,
                     stop=["</s>", "<|end_of_text|>", "<|eot_id|>"],
-                    seed=args.seed
+                    seed=cur_seed
                 )
                 s = completion.choices[0].message.content
             except:
                 # change random seed
-                args.seed += 1
+                cur_seed += 1
                 error_allowance += 1
                 if error_allowance > 10:
                     error_records.append(idx)
@@ -120,7 +122,7 @@ with tqdm(total=len(inference_dataset)-start_pos) as pbar:
             print("Raw:", s)
 
             if s == None:
-                args.seed += 1
+                cur_seed += 1
                 error_allowance += 1
                 if error_allowance > 10:
                     error_records.append(idx)
@@ -144,7 +146,7 @@ with tqdm(total=len(inference_dataset)-start_pos) as pbar:
                             try:
                                 mol = Chem.MolFromSmiles(s)
                                 if mol is None:
-                                    args.seed += 1
+                                    cur_seed += 1
                                     error_allowance += 1
                                     if error_allowance > 10:
                                         error_records.append(idx)
@@ -152,7 +154,7 @@ with tqdm(total=len(inference_dataset)-start_pos) as pbar:
                                     else:
                                         continue
                             except:
-                                args.seed += 1
+                                cur_seed += 1
                                 error_allowance += 1
                                 if error_allowance > 10:
                                     error_records.append(idx)
@@ -162,7 +164,7 @@ with tqdm(total=len(inference_dataset)-start_pos) as pbar:
                         break
                     except:
                         # change random seed
-                        args.seed += 1
+                        cur_seed += 1
                         error_allowance += 1
                         if error_allowance > 10:
                             error_records.append(idx)
@@ -172,7 +174,7 @@ with tqdm(total=len(inference_dataset)-start_pos) as pbar:
 
                 else:
                     # change random seed
-                    args.seed += 1
+                    cur_seed += 1
                     error_allowance += 1
                     if error_allowance > 10:
                         error_records.append(idx)
