@@ -113,6 +113,7 @@ with tqdm(total=len(inference_dataset)-start_pos) as pbar:
                 cur_seed += 1
                 error_allowance += 1
                 if error_allowance > 10:
+                    s = ""   # empty string
                     error_records.append(idx)
                     break
                 else:
@@ -125,6 +126,7 @@ with tqdm(total=len(inference_dataset)-start_pos) as pbar:
                 cur_seed += 1
                 error_allowance += 1
                 if error_allowance > 10:
+                    s = ""   # empty string
                     error_records.append(idx)
                     break
                 else:
@@ -184,10 +186,12 @@ with tqdm(total=len(inference_dataset)-start_pos) as pbar:
             else:
                 break
         print("Checked:", s)
+        
+        # check again
+        if not isinstance(s, str):
+            s = str(s)
 
-        if s is None:
-            s = ""
-        # s = s.replace('\n', ' ').strip()
+        s = s.replace('\n', ' ').strip()  # remove newline characters
 
         df = pd.DataFrame([s.strip()], columns=["outputs"])
         df.to_csv(args.output_dir +  args.subtask + ".csv", mode='a', header=False, index=True)
