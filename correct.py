@@ -1,6 +1,7 @@
 '''
-Almost all the unmatches come from the "" "" in the text.
+Almost all the unmatches come from the "" "" in the text. 
 '''
+import os
 import re
 import json
 import pandas as pd
@@ -42,14 +43,14 @@ def correct_text(text):
             return s
     except Exception as e:
         print(e, text)
-        return ""
+        return "None"
 
 
 parser = ArgumentParser()
 parser.add_argument("--folder", type=str, default="new_predictions")
-parser.add_argument("--name", type=str, default="mistral-7B")
+parser.add_argument("--name", type=str, default="llama3-8B")
 parser.add_argument("--task", type=str, default="MolEdit/")
-parser.add_argument("--subtask", type=str, default="DelComponent")
+parser.add_argument("--subtask", type=str, default="AddComponent")
 args = parser.parse_args()
 
 args.input = "./{}/{}/open_generation/{}/{}.csv".format(args.folder, args.name, args.task, args.subtask)
@@ -65,3 +66,13 @@ for idx, row in data.iterrows():
     
 df = pd.DataFrame(new_data, columns=["outputs"])
 df.to_csv(args.output, index=False)
+
+confirmation = input("Do you want to overwrite the original file? (y/n): ")
+if confirmation == "y":
+    # backup the original file
+    backup_file = args.input.replace(".csv", "_backup.csv")
+    os.system("mv {} {}".format(args.input, backup_file))
+    os.system("mv {} {}".format(args.output, args.input))
+
+else:
+    print("The corrected file is saved at:", args.output)

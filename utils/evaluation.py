@@ -64,7 +64,10 @@ def calculate_novelty(new_smiles_list):
 
 
 def mol_prop(mol, prop):
-    mol = Chem.MolFromSmiles(mol)
+    try:
+        mol = Chem.MolFromSmiles(mol)
+    except:
+        return None
     # always remember to check if mol is None
     if mol is None:
         return None
