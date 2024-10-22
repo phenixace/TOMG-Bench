@@ -113,7 +113,7 @@ with tqdm(total=len(inference_dataset)-start_pos) as pbar:
                 cur_seed += 1
                 error_allowance += 1
                 if error_allowance > 10:
-                    s = ""   # empty string
+                    s = "None"   # empty string
                     error_records.append(idx)
                     break
                 else:
