@@ -15,7 +15,7 @@ parser.add_argument("--benchmark", type=str, default="open_generation")
 parser.add_argument("--task", type=str, default="MolOpt")
 parser.add_argument("--subtask", type=str, default="LogP")
 
-parser.add_argument("--output_dir", type=str, default="./predictions/")
+parser.add_argument("--output_dir", type=str, default="./new_predictions/")
 parser.add_argument("--calc_novelty", action="store_true", default=False)
 
 args = parser.parse_args()
@@ -24,7 +24,10 @@ raw_file = "./data/benchmarks/{}/{}/{}/test.csv".format(args.benchmark, args.tas
 target_file = args.output_dir + args.name + "/" + args.benchmark + "/" + args.task + "/" + args.subtask + ".csv"
 
 data = pd.read_csv(raw_file)
-target = pd.read_csv(target_file)
+try:
+    target = pd.read_csv(target_file)
+except:
+    target = pd.read_csv(target_file, engine='python')
 
 if args.benchmark == "open_generation":
     if args.task == "MolCustom":

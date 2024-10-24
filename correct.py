@@ -49,13 +49,31 @@ def correct_text(text):
 parser = ArgumentParser()
 parser.add_argument("--folder", type=str, default="new_predictions")
 parser.add_argument("--name", type=str, default="llama3-8B")
-parser.add_argument("--task", type=str, default="MolEdit/")
-parser.add_argument("--subtask", type=str, default="AddComponent")
+parser.add_argument("--task", type=str, default="MolOpt/")
+parser.add_argument("--subtask", type=str, default="LogP")
 args = parser.parse_args()
 
 args.input = "./{}/{}/open_generation/{}/{}.csv".format(args.folder, args.name, args.task, args.subtask)
 
 args.output = args.input.replace(".csv", "_corrected.csv")
+
+## First check line number == 5001?
+with open(args.input, "r") as f:
+    lines = f.readlines()
+temp = []
+if len(lines) != 5001:
+    for line in lines:
+        if line[0] == "0":
+            temp.append(line)
+    # check again
+    if len(temp) != 5001:
+        print("The file does not have 5001 lines. Please check the file.")
+        exit(0)
+    else:
+        args.input = args.input.replace(".csv", "_temp.csv")
+        with open(args.input, "w+") as f:
+            f.writelines(temp)
+        
 
 data = pd.read_csv(args.input)
 

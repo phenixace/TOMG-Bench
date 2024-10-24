@@ -3,10 +3,12 @@ import random
 import pandas as pd
 import copy
 from utils.evaluation import mol_prop
-
+import datasets
+from rdkit import Chem, DataStructs
+from rdkit.Chem import AllChem
 
 parser = ArgumentParser()
-parser.add_argument("--task", type=str, default="MolCustom")
+parser.add_argument("--task", type=str, default="InstructionTuning")
 parser.add_argument("--subtask", type=str, default="BasicProp")
 parser.add_argument("--seed", type=int, default=42)
 args = parser.parse_args()
@@ -24,7 +26,10 @@ def sample_with_weights(population, raw_weights, sample_size):
             weights[population.index(chosen)] = 0
     return sample
 
-file_dir = f'./data/benchmarks/open_generation/{args.task}/{args.subtask}/'
+if args.task == "InstructionTuning":
+    file_dir = f'./data/instruction_tuning/'
+else:
+    file_dir = f'./data/benchmarks/open_generation/{args.task}/{args.subtask}/'
 
 if args.task == "MolEdit":
     if args.subtask == "AddComponent":
@@ -261,15 +266,24 @@ elif args.task == 'MolCustom':
                 group = random.choices(groups, groups_weights, k=1)[0]
                 group_num = random.choices(groups_num, groups_num_weights, k=1)[0]
                 temp_groups_dict[group] = group_num
-                candidate += str(group_num) + " " + group + " groups."
+                if group_num == 1:
+                    candidate += str(group_num) + " " + group + " group."
+                else:
+                    candidate += str(group_num) + " " + group + " groups."
             else:
                 temp_groups = sample_with_weights(groups, groups_weights, other_groups)
                 temp_groups_num = sample_with_weights(groups_num, groups_num_weights, other_groups)
                 for j in range(len(temp_groups)):
                     if j == other_groups - 1:
-                        candidate += "and " + str(temp_groups_num[j]) + " " + temp_groups[j] + " groups."
+                        if temp_groups_num[j] == 1:
+                            candidate += "and " + str(temp_groups_num[j]) + " " + temp_groups[j] + " group."
+                        else:
+                            candidate += "and " + str(temp_groups_num[j]) + " " + temp_groups[j] + " groups."
                     else:
-                        candidate += str(temp_groups_num[j]) + " " + temp_groups[j] + " groups, "
+                        if temp_groups_num[j] == 1:
+                            candidate += str(temp_groups_num[j]) + " " + temp_groups[j] + " group, "
+                        else:
+                            candidate += str(temp_groups_num[j]) + " " + temp_groups[j] + " groups, "
                     temp_groups_dict[temp_groups[j]] = temp_groups_num[j]
 
             if candidate not in instructions["Instruction"]:
@@ -414,15 +428,132 @@ elif args.task == "MolOpt":
         
 elif args.task == "InstructionTuning":
     # TODO: extract molecules from the PubChem dataset that are not contained in the zinc dataset
-    # Then calculate the properties of the molecules and generate instructions for the molecules
-    # For properties, we can consider the following:
-    # - logP
-    # - MR
-    # - QED
-    # But how to build the instruction tuning dataset?
-    # - We could randomly but simply edit the molecule structure by adding or removing a functional group
-    # - Then we check the properties of the molecule and generate the instruction
-    pass
+    
+    zinc_data = pd.read_csv('./data/sources/zinc250k/zinc250k_selfies.csv')
+    existing_molecules = zinc_data['smiles'].tolist()
+
+    pubchem_data = datasets.load_dataset('./data/sources/pubchem10m')
+    pubchem_data = pubchem_data['train']
+    pubchem_molecules = pubchem_data['smiles']
+    tasks = ['AtomNum', 'BondNum', 'FunctionalGroup', 'AddComponent', 'SubComponent', 'DelComponent', 'LogP', 'MR', 'QED']
+
+    data_frame = {"SubTask":[], "Instruction":[], "molecule":[]}
+    start_pos = 0
+    cur = 0
+    for molecule in pubchem_molecules:
+        if cur < start_pos:
+            cur += 1
+            continue
+
+        if molecule not in existing_molecules:
+            print(molecule)
+            itemtask = tasks[cur % 9]
+            if itemtask == 'AtomNum':
+                # generate the instruction for the molecule
+                # - the instruction should be like "Please generate a molecule with 10 carbon atoms
+                elements = ["carbon", "oxygen", "nitrogen", "sulfur", "fluorine", "chlorine", "bromine", "iodine", "phosphorus", "boron", "silicon", "selenium", "tellurium", "arsenic", "antimony", "bismuth", "polonium"]
+                templates = ["Please generate a molecule with ", "Please generate a molecule composed of ", "Please generate a molecule consisting ", "The molecule has ", "The molecule is composed of ", "The molecule consists of ", "There is a molecule with ", "There is a molecule composed of ", "There is a molecule consisting of ", "The molecule contains "]
+                existed_elements = []
+                for element in elements:
+                    element_num = mol_prop(molecule, "num_"+element)
+                    if element_num > 0:
+                        # generate the instruction
+                        existed_elements.append((element, element_num))
+                if len(existed_elements) == 0:
+                    continue
+                template = random.choice(templates)
+                for i in range(len(existed_elements)):
+                    element, element_num = existed_elements[i]
+                    if i == len(existed_elements) - 1:
+                        template += "and " + str(element_num) + " " + element + " atoms."
+                    else:
+                        template += str(element_num) + " " + element + " atoms, "
+
+                # save the instruction
+                print(template)
+                data_frame["SubTask"].append(itemtask)
+                data_frame["Instruction"].append(template)
+                data_frame["molecule"].append(molecule)
+            elif itemtask == 'BondNum':
+                bonds = ["single", "double", "triple", "rotatable", "aromatic"]
+                templates = ["Please generate a molecule with ", "Please generate a molecule composed of ", "Please generate a molecule consisting ", "The molecule has ", "The molecule is composed of ", "The molecule consists of ", "There is a molecule with ", "There is a molecule composed of ", "There is a molecule consisting of ", "The molecule contains "]
+                existed_bonds = []
+                for bond in bonds:
+                    bond_num = mol_prop(molecule, "num_"+bond+"_bonds")
+                    if bond_num > 0:
+                        existed_bonds.append((bond, bond_num))
+                if len(existed_bonds) == 0:
+                    continue
+                template = random.choice(templates)
+                for i in range(len(existed_bonds)):
+                    bond, bond_num = existed_bonds[i]
+                    if i == len(existed_bonds) - 1:
+                        template += "and " + str(bond_num) + " " + bond + " bonds."
+                    else:
+                        template += str(bond_num) + " " + bond + " bonds, "
+                print(template)
+                data_frame["SubTask"].append(itemtask)
+                data_frame["Instruction"].append(template)
+                data_frame["molecule"].append(molecule)
+            elif itemtask == 'FunctionalGroup':
+                groups = ["benzene ring", "hydroxyl", "anhydride", "aldehyde", "ketone", "carboxyl", "ester", "amide", "amine", "nitro", "halo", "thioether", "nitrile", "thiol", "sulfide", "disulfide", "sulfoxide", "sulfone", "phosphate", "borane", "borate", "borohydride"]
+                templates = ["Please generate a molecule with ", "Please generate a molecule composed of ", "Please generate a molecule consisting ", "The molecule has ", "The molecule is composed of ", "The molecule consists of ", "There is a molecule with ", "There is a molecule composed of ", "There is a molecule consisting of ", "The molecule contains "]
+                existed_groups = []
+                for group in groups:
+                    if group == "benzene ring":
+                        group_num = mol_prop(molecule, "num_benzene_ring")
+                    else:
+                        group_num = mol_prop(molecule, "num_"+group)
+                    if group_num > 0:
+                        existed_groups.append((group, group_num))
+                if len(existed_groups) == 0:
+                    continue
+                template = random.choice(templates)
+                for i in range(len(existed_groups)):
+                    group, group_num = existed_groups[i]
+                    if i == len(existed_groups) - 1:
+                        template += "and " + str(group_num) + " " + group + " groups."
+                    else:
+                        template += str(group_num) + " " + group + " groups, "
+                print(template)
+                data_frame["SubTask"].append(itemtask)
+                data_frame["Instruction"].append(template)
+                data_frame["molecule"].append(molecule)
+            elif itemtask == 'AddComponent':
+                # first extract all the functional groups in the molecule
+                groups = ["benzene ring", "hydroxyl", "anhydride", "aldehyde", "ketone", "carboxyl", "ester", "amide", "amine", "nitro", "halo", "thioether", "nitrile", "thiol", "sulfide", "disulfide", "sulfoxide", "sulfone", "phosphate", "borane", "borate", "borohydride"]
+                groups_SMARTS = ["[cX3]1[cX3][cX3][cX3][cX3][cX3]1", "[OH]", "[CX3](=O)[OX2][CX3](=O)", "[CX3H](=O)", "[CX3](=O)[CX4]", "[CX3](=O)[OX2H]", "[CX3](=O)[OX2][CX4]", "[NX3][CX3](=O)", "[NX3;H2,H1;!$(NC=O)]", "[NX3](=O)=O", "[F,Cl,Br,I]", "[SX2][CX4]", "C#N", "[SX2H]", "[SH]", "[SX2H0]", "S=S", "[SX3](=O)[CX4]", "[PX4](=[OX1])(=[OX1])([OX2H,OX1H0-])[OX2H,OX1H0-]", "[BX3]", "[BX3](=[OX1])([OX2H,OX1H0-])[OX2H,OX1H0-]", "[BX4]"]
+                groups_SMARTS_dict = dict(zip(groups, groups_SMARTS))
+                existed_groups = []
+                for group in groups:
+                    if group == "benzene ring":
+                        group_num = mol_prop(molecule, "num_benzene_ring")
+                    else:
+                        group_num = mol_prop(molecule, "num_"+group)
+                    if group_num > 0:
+                        existed_groups.append((group, group_num))
+                if len(existed_groups) == 0:
+                    continue
+                # randomly remove a functional group
+                group, group_num = random.choice(existed_groups)
+
+                
+            elif itemtask == 'SubComponent':
+                pass
+            elif itemtask == 'DelComponent':
+                pass
+            elif itemtask == 'LogP':
+                pass
+            elif itemtask == 'MR':
+                pass
+            elif itemtask == 'QED':
+                pass
+            cur += 1
+            if cur >= 18000:
+                break    
+    df = pd.DataFrame(data_frame)
+    df.to_csv(file_dir + "/train.csv", index=False)
+    
 elif args.task == "PPO":
     # TODO: the instruction following is also considered.
     # How reward is built?
