@@ -114,7 +114,8 @@ def mol_prop(mol, prop):
         return sum([bond.GetBondType() == Chem.rdchem.BondType.TRIPLE for bond in mol.GetBonds()])
     elif prop == 'num_aromatic_bonds':
         return sum([bond.GetBondType() == Chem.rdchem.BondType.AROMATIC for bond in mol.GetBonds()])
-    
+    elif prop == 'num_rotatable_bonds': # rotatable bonds
+        return Descriptors.NumRotatableBonds(mol)
 
     
     ## Common Atom Counts
