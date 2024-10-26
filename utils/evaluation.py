@@ -156,43 +156,43 @@ def mol_prop(mol, prop):
     
     ## Functional groups
     elif prop == "num_benzene_ring":
-        smarts = '[cX3]1[cX3][cX3][cX3][cX3][cX3]1'
+        smarts = '[cR1]1[cR1][cR1][cR1][cR1][cR1]1'
         matches = mol.GetSubstructMatches(Chem.MolFromSmarts(smarts))
         return len(matches)
     elif prop == "num_hydroxyl":
-        smarts = '[OH]'
+        smarts = '[OX2H]'   # Hydroxyl including phenol, alcohol, and carboxylic acid.
         matches = mol.GetSubstructMatches(Chem.MolFromSmarts(smarts))
         return len(matches)
     elif prop == "num_anhydride":
-        smarts = '[CX3](=O)[OX2][CX3](=O)'
+        smarts = '[CX3](=[OX1])[OX2][CX3](=[OX1])'
         matches = mol.GetSubstructMatches(Chem.MolFromSmarts(smarts))
         return len(matches)
     elif prop == "num_aldehyde":
-        smarts = '[CX3H](=O)'
+        smarts = '[CX3H1](=O)[#6]'
         matches = mol.GetSubstructMatches(Chem.MolFromSmarts(smarts))
         return len(matches)
     elif prop == "num_ketone":
-        smarts = '[CX3](=O)[CX4]'
+        smarts = '[#6][CX3](=O)[#6]'
         matches = mol.GetSubstructMatches(Chem.MolFromSmarts(smarts))
         return len(matches)
     elif prop == "num_carboxyl":
-        smarts = '[CX3](=O)[OX2H]'
+        smarts = '[CX3](=O)[OX2H1]'
         matches = mol.GetSubstructMatches(Chem.MolFromSmarts(smarts))
         return len(matches)
     elif prop == "num_ester":
-        smarts = '[CX3](=O)[OX2][CX4]'
+        smarts = '[#6][CX3](=O)[OX2H0][#6]'    # Ester Also hits anhydrides but won't hit formic anhydride.
         matches = mol.GetSubstructMatches(Chem.MolFromSmarts(smarts))
         return len(matches)
     elif prop == "num_amide":
-        smarts = '[NX3][CX3](=O)'
+        smarts = '[NX3][CX3](=[OX1])[#6]'
         matches = mol.GetSubstructMatches(Chem.MolFromSmarts(smarts))
         return len(matches)
     elif prop == "num_amine":
-        smarts = '[NX3;H2,H1;!$(NC=O)]'
+        smarts = '[NX3;H2,H1;!$(NC=O)]'    # Primary or secondary amine, not amide.
         matches = mol.GetSubstructMatches(Chem.MolFromSmarts(smarts))
         return len(matches)
     elif prop == "num_nitro":
-        smarts = '[NX3](=O)=O'
+        smarts = '[$([NX3](=O)=O),$([NX3+](=O)[O-])][!#8]'
         matches = mol.GetSubstructMatches(Chem.MolFromSmarts(smarts))
         return len(matches)
     elif prop == "num_halo":
@@ -204,43 +204,33 @@ def mol_prop(mol, prop):
         matches = mol.GetSubstructMatches(Chem.MolFromSmarts(smarts))
         return len(matches)
     elif prop == "num_nitrile":
-        smarts = 'C#N'
+        smarts = '[NX1]#[CX2]'
         matches = mol.GetSubstructMatches(Chem.MolFromSmarts(smarts))
         return len(matches)
     elif prop == "num_thiol":
-        smarts = '[SH]'
+        smarts = '[#16X2H]'
         matches = mol.GetSubstructMatches(Chem.MolFromSmarts(smarts))
         return len(matches)
     elif prop == "num_sulfide":
-        smarts = '[SX2H0]'
+        smarts = '[#16X2H0]'    #  Won't hit thiols. Hits disulfides too.
         matches = mol.GetSubstructMatches(Chem.MolFromSmarts(smarts))
-        return len(matches)
+        exception = '[#16X2H0][#16X2H0]'
+        matches_exception = mol.GetSubstructMatches(Chem.MolFromSmarts(exception))
+        return len(matches) - len(matches_exception)
     elif prop == "num_disulfide":
-        smarts = 'S=S'
+        smarts = '[#16X2H0][#16X2H0]'    
         matches = mol.GetSubstructMatches(Chem.MolFromSmarts(smarts))
         return len(matches)
     elif prop == "num_sulfoxide":
-        smarts = '[SX3](=O)[CX4]'
+        smarts = '[$([#16X3]=[OX1]),$([#16X3+][OX1-])]'
         matches = mol.GetSubstructMatches(Chem.MolFromSmarts(smarts))
         return len(matches)
     elif prop == "num_sulfone":
-        smarts = '[SX4](=O)(=O)[CX4]'
-        matches = mol.GetSubstructMatches(Chem.MolFromSmarts(smarts))
-        return len(matches)
-    elif prop == "num_phosphate":
-        smarts = '[PX4](=[OX1])(=[OX1])([OX2H,OX1H0-])[OX2H,OX1H0-]'
+        smarts = '[$([#16X4](=[OX1])=[OX1]),$([#16X4+2]([OX1-])[OX1-])]'
         matches = mol.GetSubstructMatches(Chem.MolFromSmarts(smarts))
         return len(matches)
     elif prop == "num_borane":
         smarts = '[BX3]'
-        matches = mol.GetSubstructMatches(Chem.MolFromSmarts(smarts))
-        return len(matches)
-    elif prop == "num_borate":
-        smarts = '[BX3](=[OX1])([OX2H,OX1H0-])[OX2H,OX1H0-]'
-        matches = mol.GetSubstructMatches(Chem.MolFromSmarts(smarts))
-        return len(matches)
-    elif prop == "num_borohydride":
-        smarts = '[BX4]'
         matches = mol.GetSubstructMatches(Chem.MolFromSmarts(smarts))
         return len(matches)
 
@@ -287,4 +277,4 @@ def calculate_basic_property(smiles, prop):
 if __name__ == '__main__':
     smiles = 'C(=O)OC(=O)C'
 
-    print(mol_prop(smiles, 'num_aromatic_bonds'))
+    print(mol_prop(smiles, 'num_anhydride'))
