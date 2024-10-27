@@ -11,7 +11,7 @@ parser = ArgumentParser()
 parser.add_argument("--task", type=str, default="InstructionTuning")
 parser.add_argument("--subtask", type=str, default="BasicProp")
 parser.add_argument("--seed", type=int, default=42)
-parser.add_argument("--num_samples", type=int, default=45000)
+parser.add_argument("--num_samples", type=int, default=4500)
 args = parser.parse_args()
 
 random.seed(args.seed)
