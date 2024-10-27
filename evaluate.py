@@ -82,7 +82,7 @@ if args.benchmark == "open_generation":
                 novelties = calculate_novelty(valid_molecules)
                 print("Novelty: ", sum(novelties) / len(novelties))
         elif args.subtask == "FunctionalGroup":
-            functional_groups = ['benzene rings', 'hydroxyl', 'anhydride', 'aldehyde', 'ketone', 'carboxyl', 'ester', 'amide', 'amine', 'nitro', 'halo', 'nitrile', 'thiol', 'sulfide', 'disulfide', 'sulfoxide', 'sulfone', 'phosphate', 'borane', 'borate', 'borohydride']
+            functional_groups = ['benzene rings', 'hydroxyl', 'anhydride', 'aldehyde', 'ketone', 'carboxyl', 'ester', 'amide', 'amine', 'nitro', 'halo', 'nitrile', 'thiol', 'sulfide', 'disulfide', 'sulfoxide', 'sulfone', 'borane']
             flags = []
             valid_molecules = []
             for idx in tqdm(range(len(data))):
