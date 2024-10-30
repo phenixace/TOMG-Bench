@@ -5,6 +5,7 @@ import os
 import re
 import json
 import pandas as pd
+import selfies
 from argparse import ArgumentParser
 
 
@@ -79,7 +80,14 @@ data = pd.read_csv(args.input)
 
 new_data = []
 for idx, row in data.iterrows():
-    new_data.append(correct_text(row["outputs"]))
+    temp = correct_text(row["outputs"])
+    if "biot5" in args.name:
+        try:
+            temp = selfies.decoder(temp)
+        except Exception as e:
+            print(e, temp)
+            temp = "None"
+    new_data.append(temp)
 
     
 df = pd.DataFrame(new_data, columns=["outputs"])

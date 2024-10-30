@@ -22,9 +22,9 @@ from peft import (
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model_type",  type=str, default="t5")
-    parser.add_argument("--name",  type=str, default="molt5-large")
-    parser.add_argument("--base_model", type=str, default="laituan245/molt5-large-caption2smiles") # meta-llama/Meta-Llama-3-8B-Instruct
-    parser.add_argument("--adapter_path", type=str, default="laituan245/molt5-large-caption2smiles")
+    parser.add_argument("--name",  type=str, default="molt5-base")
+    parser.add_argument("--base_model", type=str, default="laituan245/molt5-base-caption2smiles") # meta-llama/Meta-Llama-3-8B-Instruct
+    parser.add_argument("--adapter_path", type=str, default="laituan245/molt5-base-caption2smiles")
     
     parser.add_argument("--benchmark", type=str, default="open_generation")
     parser.add_argument("--task", type=str, default="MolCustom")
@@ -53,6 +53,7 @@ def main():
     parser.add_argument("--int8", default=False, action="store_true")
     parser.add_argument("--fp16", default=False, action="store_true")
     # parser.add_argument("--bf16", default=False, action="store_true")   # in case someone wants to use the bf16 option
+    parser.add_argument("--selfies", default=False, action="store_true")
     parser.add_argument("--smiles_check", default=False, action="store_true")
     
 
@@ -87,7 +88,10 @@ def main():
 
     # load dataset
     if args.benchmark == "open_generation":
-        test_dataset = OMGDataset(args.task, args.subtask)
+        if args.selfies:
+            test_dataset = OMGDataset(args.task, args.subtask, use_selfies=True)
+        else:
+            test_dataset = OMGDataset(args.task, args.subtask)
     elif args.benchmark == "template_generation":
         test_dataset = TMGDataset(args.task, args.subtask)
     else:

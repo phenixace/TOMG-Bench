@@ -301,7 +301,10 @@ elif args.task == 'MolCustom':
         while i < 5000:
             
             carbon_num = random.randint(1, 40)
-            candidate = random.choice(prompt_templates) + str(carbon_num) + " carbon atoms"
+            if carbon_num == 1:
+                candidate = random.choice(prompt_templates) + str(carbon_num) + " carbon atom"
+            else:
+                candidate = random.choice(prompt_templates) + str(carbon_num) + " carbon atoms"
 
             other_elements_num = [item for item in range(0, min(5, carbon_num))]
             other_elements_num_weights = [int(10/(item+1)) for item in other_elements_num]
@@ -313,7 +316,10 @@ elif args.task == 'MolCustom':
             elif other_elements == 1:
                 element = random.choices(elements, elements_weights, k=1)[0]
                 element_num = random.choices(elements_num, elements_num_weights, k=1)[0]
-                candidate += " and " + str(element_num) + " " + element + " atom."
+                if element_num == 1:
+                    candidate += " and " + str(element_num) + " " + element + " atom."
+                else:
+                    candidate += " and " + str(element_num) + " " + element + " atoms."
                 Other_elements_dict[element] = element_num
             else:
                 candidate += ", "
@@ -322,9 +328,15 @@ elif args.task == 'MolCustom':
                 temp_elements_num = sample_with_weights(elements_num, elements_num_weights, other_elements)
                 for j in range(len(temp_elements)):
                     if j == other_elements - 1:
-                        candidate += "and " + str(temp_elements_num[j]) + " " + temp_elements[j] + " atoms."
+                        if temp_elements_num[j] == 1:
+                            candidate += "and " + str(temp_elements_num[j]) + " " + temp_elements[j] + " atom."
+                        else:
+                            candidate += "and " + str(temp_elements_num[j]) + " " + temp_elements[j] + " atoms."
                     else:
-                        candidate += str(temp_elements_num[j]) + " " + temp_elements[j] + " atoms, "
+                        if temp_elements_num[j] == 1:
+                            candidate += str(temp_elements_num[j]) + " " + temp_elements[j] + " atom, "
+                        else:
+                            candidate += str(temp_elements_num[j]) + " " + temp_elements[j] + " atoms, "
 
                     Other_elements_dict[temp_elements[j]] = temp_elements_num[j]
                 
