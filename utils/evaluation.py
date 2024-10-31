@@ -47,8 +47,8 @@ def calculate_novelty(new_smiles_list):
     # 将SMILES转换为指纹并转换为PyTorch张量
     data = pd.read_csv("./data/sources/zinc250k/zinc250k_selfies.csv")
     known_smiles_list = data["smiles"].tolist()
-    known_fps = fingerprints_to_tensor([smiles_to_fingerprint(smiles) for smiles in known_smiles_list]).cuda()
-    new_fps = fingerprints_to_tensor([smiles_to_fingerprint(smiles) for smiles in new_smiles_list]).cuda()
+    known_fps = fingerprints_to_tensor([smiles_to_fingerprint(smiles) for smiles in known_smiles_list])#.cuda()
+    new_fps = fingerprints_to_tensor([smiles_to_fingerprint(smiles) for smiles in new_smiles_list])#.cuda()
     
     # 计算Tanimoto相似度
     dot_product = torch.mm(new_fps, known_fps.t())

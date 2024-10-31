@@ -6,12 +6,13 @@ from utils.evaluation import mol_prop
 import datasets
 from rdkit import Chem, DataStructs
 from rdkit.Chem import AllChem
+from tqdm import tqdm
 
 parser = ArgumentParser()
 parser.add_argument("--task", type=str, default="InstructionTuning")
 parser.add_argument("--subtask", type=str, default="BasicProp")
 parser.add_argument("--seed", type=int, default=42)
-parser.add_argument("--num_samples", type=int, default=4500)
+parser.add_argument("--num_samples", type=int, default=90000)
 args = parser.parse_args()
 
 random.seed(args.seed)
@@ -592,356 +593,400 @@ elif args.task == "InstructionTuning":
     data_frame = {"SubTask":[], "Instruction":[], "molecule":[]}
     start_pos = 0
     cur = 0
-    for molecule in pubchem_molecules:
-        if cur < start_pos:
-            cur += 1
-            continue
-
-        if molecule not in existing_molecules:
-            print(molecule)
-            try:
-                mol = Chem.MolFromSmiles(molecule)
-                if mol is None:
-                    continue
-            except:
+    with tqdm(total=args.num_samples) as pbar:
+        for molecule in pubchem_molecules:
+            if cur < start_pos:
+                cur += 1
                 continue
-            itemtask = tasks[cur % 9]
-            if itemtask == 'AtomNum':
-                # generate the instruction for the molecule
-                # - the instruction should be like "Please generate a molecule with 10 carbon atoms
-                elements = ["carbon", "oxygen", "nitrogen", "sulfur", "fluorine", "chlorine", "bromine", "iodine", "phosphorus", "boron", "silicon", "selenium", "tellurium", "arsenic", "antimony", "bismuth", "polonium"]
-                templates = ["Please generate a molecule with ", "Please generate a molecule composed of ", "Please generate a molecule consisting ", "The molecule has ", "The molecule is composed of ", "The molecule consists of ", "There is a molecule with ", "There is a molecule composed of ", "There is a molecule consisting of ", "The molecule contains "]
-                existed_elements = []
-                for element in elements:
-                    element_num = mol_prop(molecule, "num_"+element)
-                    if element_num > 0:
-                        # generate the instruction
-                        existed_elements.append((element, element_num))
-                if len(existed_elements) == 0:
+
+            if molecule not in existing_molecules:
+                print(molecule)
+                try:
+                    mol = Chem.MolFromSmiles(molecule)
+                    if mol is None:
+                        continue
+                except:
                     continue
-                template = random.choice(templates)
-                for i in range(len(existed_elements)):
-                    element, element_num = existed_elements[i]
-                    if i == len(existed_elements) - 1:
-                        template += "and " + str(element_num) + " " + element + " atoms."
+                itemtask = tasks[cur % 9]
+                if itemtask == 'AtomNum':
+                    # generate the instruction for the molecule
+                    # - the instruction should be like "Please generate a molecule with 10 carbon atoms
+                    elements = ["carbon", "oxygen", "nitrogen", "sulfur", "fluorine", "chlorine", "bromine", "iodine", "phosphorus", "boron", "silicon", "selenium", "tellurium", "arsenic", "antimony", "bismuth", "polonium"]
+                    templates = ["Please generate a molecule with ", "Please generate a molecule composed of ", "Please generate a molecule consisting ", "The molecule has ", "The molecule is composed of ", "The molecule consists of ", "There is a molecule with ", "There is a molecule composed of ", "There is a molecule consisting of ", "The molecule contains "]
+                    existed_elements = []
+                    for element in elements:
+                        element_num = mol_prop(molecule, "num_"+element)
+                        if element_num > 0:
+                            # generate the instruction
+                            existed_elements.append((element, element_num))
+                    if len(existed_elements) == 0:
+                        continue
+                    elif len(existed_elements) == 1:
+                        template = random.choice(templates)
+                        element, element_num = existed_elements[0]
+                        if element_num == 1:
+                            template += str(element_num) + " " + element + " atom."
+                        else:
+                            template += str(element_num) + " " + element + " atoms."
                     else:
-                        template += str(element_num) + " " + element + " atoms, "
+                        template = random.choice(templates)
+                        for i in range(len(existed_elements)):
+                            element, element_num = existed_elements[i]
+                            if i == len(existed_elements) - 1:
+                                if element_num == 1:
+                                    template += "and " + str(element_num) + " " + element + " atom."
+                                else:
+                                    template += "and " + str(element_num) + " " + element + " atoms."
+                            else:
+                                if element_num == 1:
+                                    template += str(element_num) + " " + element + " atom, "
+                                else:
+                                    template += str(element_num) + " " + element + " atoms, "
 
-                # save the instruction
-                print(template)
-                data_frame["SubTask"].append(itemtask)
-                data_frame["Instruction"].append(template)
-                data_frame["molecule"].append(molecule)
-            elif itemtask == 'BondNum':
-                bonds = ["single", "double", "triple", "rotatable", "aromatic"]
-                templates = ["Please generate a molecule with ", "Please generate a molecule composed of ", "Please generate a molecule consisting ", "The molecule has ", "The molecule is composed of ", "The molecule consists of ", "There is a molecule with ", "There is a molecule composed of ", "There is a molecule consisting of ", "The molecule contains "]
-                existed_bonds = []
-                for bond in bonds:
-                    bond_num = mol_prop(molecule, "num_"+bond+"_bonds")
-                    if bond_num > 0:
-                        existed_bonds.append((bond, bond_num))
-                if len(existed_bonds) == 0:
-                    continue
-                template = random.choice(templates)
-                for i in range(len(existed_bonds)):
-                    bond, bond_num = existed_bonds[i]
-                    if i == len(existed_bonds) - 1:
-                        template += "and " + str(bond_num) + " " + bond + " bonds."
+                    # save the instruction
+                    print(template)
+                    data_frame["SubTask"].append(itemtask)
+                    data_frame["Instruction"].append(template)
+                    data_frame["molecule"].append(molecule)
+                elif itemtask == 'BondNum':
+                    bonds = ["single", "double", "triple", "rotatable", "aromatic"]
+                    templates = ["Please generate a molecule with ", "Please generate a molecule composed of ", "Please generate a molecule consisting ", "The molecule has ", "The molecule is composed of ", "The molecule consists of ", "There is a molecule with ", "There is a molecule composed of ", "There is a molecule consisting of ", "The molecule contains "]
+                    existed_bonds = []
+                    for bond in bonds:
+                        bond_num = mol_prop(molecule, "num_"+bond+"_bonds")
+                        if bond_num > 0:
+                            existed_bonds.append((bond, bond_num))
+                    if len(existed_bonds) == 0:
+                        continue
+                    elif len(existed_bonds) == 1:
+                        template = random.choice(templates)
+                        bond, bond_num = existed_bonds[0]
+                        if bond_num == 1:
+                            template += str(bond_num) + " " + bond + " bond."
+                        else:
+                            template += str(bond_num) + " " + bond + " bonds."
                     else:
-                        template += str(bond_num) + " " + bond + " bonds, "
-                print(template)
-                data_frame["SubTask"].append(itemtask)
-                data_frame["Instruction"].append(template)
-                data_frame["molecule"].append(molecule)
-            elif itemtask == 'FunctionalGroup':
-                groups = ["benzene ring", "hydroxyl", "anhydride", "aldehyde", "ketone", "carboxyl", "ester", "amide", "amine", "nitro", "halo", "thioether", "nitrile", "thiol", "sulfide", "disulfide", "sulfoxide", "sulfone", "borane"]
-                templates = ["Please generate a molecule with ", "Please generate a molecule composed of ", "Please generate a molecule consisting ", "The molecule has ", "The molecule is composed of ", "The molecule consists of ", "There is a molecule with ", "There is a molecule composed of ", "There is a molecule consisting of ", "The molecule contains "]
-                existed_groups = []
-                for group in groups:
-                    if group == "benzene ring":
-                        group_num = mol_prop(molecule, "num_benzene_ring")
+                        template = random.choice(templates)
+                        for i in range(len(existed_bonds)):
+                            bond, bond_num = existed_bonds[i]
+                            if i == len(existed_bonds) - 1:
+                                if bond_num == 1:
+                                    template += "and " + str(bond_num) + " " + bond + " bond."
+                                else:
+                                    template += "and " + str(bond_num) + " " + bond + " bonds."
+                            else:
+                                if bond_num == 1:
+                                    template += str(bond_num) + " " + bond + " bond, "
+                                else:
+                                    template += str(bond_num) + " " + bond + " bonds, "
+                    print(template)
+                    data_frame["SubTask"].append(itemtask)
+                    data_frame["Instruction"].append(template)
+                    data_frame["molecule"].append(molecule)
+                elif itemtask == 'FunctionalGroup':
+                    groups = ["benzene ring", "hydroxyl", "anhydride", "aldehyde", "ketone", "carboxyl", "ester", "amide", "amine", "nitro", "halo", "thioether", "nitrile", "thiol", "sulfide", "disulfide", "sulfoxide", "sulfone", "borane"]
+                    templates = ["Please generate a molecule with ", "Please generate a molecule composed of ", "Please generate a molecule consisting ", "The molecule has ", "The molecule is composed of ", "The molecule consists of ", "There is a molecule with ", "There is a molecule composed of ", "There is a molecule consisting of ", "The molecule contains "]
+                    existed_groups = []
+                    for group in groups:
+                        if group == "benzene ring":
+                            group_num = mol_prop(molecule, "num_benzene_ring")
+                        else:
+                            group_num = mol_prop(molecule, "num_"+group)
+                        if group_num > 0:
+                            existed_groups.append((group, group_num))
+                    if len(existed_groups) == 0:
+                        continue
+                    elif len(existed_groups) == 1:
+                        template = random.choice(templates)
+                        group, group_num = existed_groups[0]
+                        if group_num == 1:
+                            template += str(group_num) + " " + group + " group."
+                        else:
+                            template += str(group_num) + " " + group + " groups."
+                    template = random.choice(templates)
+                    for i in range(len(existed_groups)):
+                        group, group_num = existed_groups[i]
+                        if i == len(existed_groups) - 1:
+                            if group_num == 1:
+                                template += "and " + str(group_num) + " " + group + " group."
+                            else:
+
+                                template += "and " + str(group_num) + " " + group + " groups."
+                        else:
+                            if group_num == 1:
+                                template += str(group_num) + " " + group + " group, "
+                            else:
+                                template += str(group_num) + " " + group + " groups, "
+                    print(template)
+                    data_frame["SubTask"].append(itemtask)
+                    data_frame["Instruction"].append(template)
+                    data_frame["molecule"].append(molecule)
+                elif itemtask == 'AddComponent':
+                    templates = ["Please add a {} to the molecule {}.", "Modify the molecule {} by adding a {}.", "Add a {} to the molecule {}."]
+                    try:
+                        new_mol, group = AddComponent(mol)
+                    except:
+                        continue
+                    template = random.randint(0, 2)
+                    if template == 0 or template == 2:
+                        template = templates[template].format(group, molecule)
                     else:
-                        group_num = mol_prop(molecule, "num_"+group)
-                    if group_num > 0:
-                        existed_groups.append((group, group_num))
-                if len(existed_groups) == 0:
-                    continue
-                template = random.choice(templates)
-                for i in range(len(existed_groups)):
-                    group, group_num = existed_groups[i]
-                    if i == len(existed_groups) - 1:
-                        template += "and " + str(group_num) + " " + group + " groups."
+                        template = templates[template].format(molecule, group)
+                    
+                    print(template)
+                    
+                    if "." in new_mol:    
+                        continue
+                    try:
+                        mol = Chem.MolFromSmiles(new_mol)
+                    except:
+                        continue
+                    data_frame["SubTask"].append(itemtask)
+                    data_frame["Instruction"].append(template)
+                    data_frame["molecule"].append(new_mol)
+                    print(new_mol)
+                    
+        
+                elif itemtask == 'SubComponent':
+                    
+                    templates = ["Please substitute a {} in the molecule {} with a {}.", "Modify the molecule {} by substituting a {} with a {}.", "Substitute a {} in the molecule {} with a {}."]
+                    try:
+                        new_mol, group, new_group = SubComponent(mol)
+                    except:
+                        continue
+                    if new_mol == None:
+                        continue
+                    template = random.randint(0,2)
+                    if template == 0 or template == 2:
+                        template = random.choice(templates).format(group, molecule, new_group)
                     else:
-                        template += str(group_num) + " " + group + " groups, "
-                print(template)
-                data_frame["SubTask"].append(itemtask)
-                data_frame["Instruction"].append(template)
-                data_frame["molecule"].append(molecule)
-            elif itemtask == 'AddComponent':
-                templates = ["Please add a {} to the molecule {}.", "Modify the molecule {} by adding a {}.", "Add a {} to the molecule {}."]
-                try:
-                    new_mol, group = AddComponent(mol)
-                except:
-                    continue
-                template = random.randint(0, 2)
-                if template == 0 or template == 2:
-                    template = templates[template].format(group, molecule)
-                else:
-                    template = templates[template].format(molecule, group)
-                
-                print(template)
-                
-                if "." in new_mol:    
-                    continue
-                try:
-                    mol = Chem.MolFromSmiles(new_mol)
-                except:
-                    continue
-                data_frame["SubTask"].append(itemtask)
-                data_frame["Instruction"].append(template)
-                data_frame["molecule"].append(new_mol)
-                print(new_mol)
-                
-       
-            elif itemtask == 'SubComponent':
-                
-                templates = ["Please substitute a {} in the molecule {} with a {}.", "Modify the molecule {} by substituting a {} with a {}.", "Substitute a {} in the molecule {} with a {}."]
-                try:
-                    new_mol, group, new_group = SubComponent(mol)
-                except:
-                    continue
-                if new_mol == None:
-                    continue
-                template = random.randint(0,2)
-                if template == 0 or template == 2:
-                    template = random.choice(templates).format(group, molecule, new_group)
-                else:
-                    template = random.choice(templates).format(molecule, group, new_group)
-                print(template)
-                if "." in new_mol:    
-                    continue
-                try:
-                    mol = Chem.MolFromSmiles(new_mol)
-                except:
-                    continue
-                data_frame["SubTask"].append(itemtask)
-                data_frame["Instruction"].append(template)
-                data_frame["molecule"].append(new_mol)
-                print(new_mol)
-                
+                        template = random.choice(templates).format(molecule, group, new_group)
+                    print(template)
+                    if "." in new_mol:    
+                        continue
+                    try:
+                        mol = Chem.MolFromSmiles(new_mol)
+                    except:
+                        continue
+                    data_frame["SubTask"].append(itemtask)
+                    data_frame["Instruction"].append(template)
+                    data_frame["molecule"].append(new_mol)
+                    print(new_mol)
+                    
 
-            elif itemtask == 'DelComponent':
-                
-                templates = ["Please remove a {} from the molecule {}.", "Modify the molecule {} by removing a {}.", "Remove a {} from the molecule {}."]
-                try:
-                    new_mol, group = DelComponent(mol)
-                except:
-                    continue
-                if new_mol == None:
-                    continue
-                
-                template = random.randint(0,2)
-                if template == 0 or template == 2:
-                    template = random.choice(templates).format(group, molecule)
-                else:
-                    template = random.choice(templates).format(molecule, group)
-                if "." in new_mol:    
-                    continue
-                try:
-                    mol = Chem.MolFromSmiles(new_mol)
-                except:
-                    continue
-                print(template)
-                data_frame["SubTask"].append(itemtask)
-                data_frame["Instruction"].append(template)
-                data_frame["molecule"].append(new_mol)
-                print(new_mol)
-  
-            elif itemtask == 'LogP':
-                method = random.randint(0, 2)
-                templates_low = ["Please optimize the molecule {} to have a lower LogP value.", "Modify the molecule {} to decrease its LogP value.", "Optimize the molecule {} to have a lower LogP value.", "Please modify the molecule {} to decrease its LogP value.", "Modify the molecule {} to have a lower LogP value."]
-                templates_high = ["Please optimize the molecule {} to have a higher LogP value.", "Modify the molecule {} to increase its LogP value.", "Optimize the molecule {} to have a higher LogP value.", "Please modify the molecule {} to increase its LogP value.", "Modify the molecule {} to have a higher LogP value."]
-                if method == 0:
+                elif itemtask == 'DelComponent':
+                    
+                    templates = ["Please remove a {} from the molecule {}.", "Modify the molecule {} by removing a {}.", "Remove a {} from the molecule {}."]
                     try:
-                        new_mol, _ = AddComponent(mol)
-                    except:
-                        continue
-                    if new_mol == None:
-                        method += 1
-                    elif "." in new_mol:    
-                        method += 1
-                    try:
-                        mol = Chem.MolFromSmiles(new_mol)
-                    except:
-                        method += 1
-                if method == 1:
-                    try:
-                        new_mol, _, _ = SubComponent(mol)
-                    except:
-                        continue
-                    if new_mol == None:
-                        method += 1
-                    elif "." in new_mol:    
-                        method += 1
-                    try:
-                        mol = Chem.MolFromSmiles(new_mol)
-                    except:
-                        method += 1
-                if method == 2:
-                    try:
-                        new_mol, _ = DelComponent(mol)
+                        new_mol, group = DelComponent(mol)
                     except:
                         continue
                     if new_mol == None:
                         continue
-                    elif "." in new_mol:    
+                    
+                    template = random.randint(0,2)
+                    if template == 0 or template == 2:
+                        template = random.choice(templates).format(group, molecule)
+                    else:
+                        template = random.choice(templates).format(molecule, group)
+                    if "." in new_mol:    
                         continue
                     try:
                         mol = Chem.MolFromSmiles(new_mol)
                     except:
                         continue
-                print(new_mol)
-                if new_mol == None:
-                    continue
-                logP = mol_prop(molecule, "logP")
-                new_logP = mol_prop(new_mol, "logP")
-                if new_logP == None:
-                    continue
-                if logP > new_logP:
-                    template = random.choice(templates_low).format(molecule)
-                else:
-                    template = random.choice(templates_high).format(molecule)
+                    print(template)
+                    data_frame["SubTask"].append(itemtask)
+                    data_frame["Instruction"].append(template)
+                    data_frame["molecule"].append(new_mol)
+                    print(new_mol)
+    
+                elif itemtask == 'LogP':
+                    method = random.randint(0, 2)
+                    templates_low = ["Please optimize the molecule {} to have a lower LogP value.", "Modify the molecule {} to decrease its LogP value.", "Optimize the molecule {} to have a lower LogP value.", "Please modify the molecule {} to decrease its LogP value.", "Modify the molecule {} to have a lower LogP value."]
+                    templates_high = ["Please optimize the molecule {} to have a higher LogP value.", "Modify the molecule {} to increase its LogP value.", "Optimize the molecule {} to have a higher LogP value.", "Please modify the molecule {} to increase its LogP value.", "Modify the molecule {} to have a higher LogP value."]
+                    if method == 0:
+                        try:
+                            new_mol, _ = AddComponent(mol)
+                        except:
+                            continue
+                        if new_mol == None:
+                            method += 1
+                        elif "." in new_mol:    
+                            method += 1
+                        try:
+                            mol = Chem.MolFromSmiles(new_mol)
+                        except:
+                            method += 1
+                    if method == 1:
+                        try:
+                            new_mol, _, _ = SubComponent(mol)
+                        except:
+                            continue
+                        if new_mol == None:
+                            method += 1
+                        elif "." in new_mol:    
+                            method += 1
+                        try:
+                            mol = Chem.MolFromSmiles(new_mol)
+                        except:
+                            method += 1
+                    if method == 2:
+                        try:
+                            new_mol, _ = DelComponent(mol)
+                        except:
+                            continue
+                        if new_mol == None:
+                            continue
+                        elif "." in new_mol:    
+                            continue
+                        try:
+                            mol = Chem.MolFromSmiles(new_mol)
+                        except:
+                            continue
+                    print(new_mol)
+                    if new_mol == None:
+                        continue
+                    logP = mol_prop(molecule, "logP")
+                    new_logP = mol_prop(new_mol, "logP")
+                    if new_logP == None:
+                        continue
+                    if logP > new_logP:
+                        template = random.choice(templates_low).format(molecule)
+                    else:
+                        template = random.choice(templates_high).format(molecule)
 
-                print(template)
-                data_frame["SubTask"].append(itemtask)
-                data_frame["Instruction"].append(template)
-                data_frame["molecule"].append(new_mol)
+                    print(template)
+                    data_frame["SubTask"].append(itemtask)
+                    data_frame["Instruction"].append(template)
+                    data_frame["molecule"].append(new_mol)
 
 
-            elif itemtask == 'MR':
-                method = random.randint(0, 2)
-                templates_low = ["Please optimize the molecule {} to have a lower MR value.", "Modify the molecule {} to decrease its MR value.", "Optimize the molecule {} to have a lower MR value.", "Please modify the molecule {} to decrease its MR value.", "Modify the molecule {} to have a lower MR value."]
-                templates_high = ["Please optimize the molecule {} to have a higher MR value.", "Modify the molecule {} to increase its MR value.", "Optimize the molecule {} to have a higher MR value.", "Please modify the molecule {} to increase its MR value.", "Modify the molecule {} to have a higher MR value."]
-                if method == 0:
-                    try:
-                        new_mol, _ = AddComponent(mol)
-                    except:
-                        continue
+                elif itemtask == 'MR':
+                    method = random.randint(0, 2)
+                    templates_low = ["Please optimize the molecule {} to have a lower MR value.", "Modify the molecule {} to decrease its MR value.", "Optimize the molecule {} to have a lower MR value.", "Please modify the molecule {} to decrease its MR value.", "Modify the molecule {} to have a lower MR value."]
+                    templates_high = ["Please optimize the molecule {} to have a higher MR value.", "Modify the molecule {} to increase its MR value.", "Optimize the molecule {} to have a higher MR value.", "Please modify the molecule {} to increase its MR value.", "Modify the molecule {} to have a higher MR value."]
+                    if method == 0:
+                        try:
+                            new_mol, _ = AddComponent(mol)
+                        except:
+                            continue
+                        if new_mol == None:
+                            method += 1
+                        elif "." in new_mol:    
+                            method += 1
+                        try:
+                            mol = Chem.MolFromSmiles(new_mol)
+                        except:
+                            method += 1
+                    if method == 1:
+                        try:
+                            new_mol, _, _ = SubComponent(mol)
+                        except:
+                            continue
+                        if new_mol == None:
+                            method += 1
+                        elif "." in new_mol:    
+                            method += 1
+                        try:
+                            mol = Chem.MolFromSmiles(new_mol)
+                        except:
+                            method += 1
+                    if method == 2:
+                        try:
+                            new_mol, _ = DelComponent(mol)
+                        except:
+                            continue
+                        if new_mol == None:
+                            continue
+                        elif "." in new_mol:    
+                            continue
+                        try:
+                            mol = Chem.MolFromSmiles(new_mol)
+                        except:
+                            continue
+                    print(new_mol)
                     if new_mol == None:
-                        method += 1
-                    elif "." in new_mol:    
-                        method += 1
-                    try:
-                        mol = Chem.MolFromSmiles(new_mol)
-                    except:
-                        method += 1
-                if method == 1:
-                    try:
-                        new_mol, _, _ = SubComponent(mol)
-                    except:
                         continue
-                    if new_mol == None:
-                        method += 1
-                    elif "." in new_mol:    
-                        method += 1
-                    try:
-                        mol = Chem.MolFromSmiles(new_mol)
-                    except:
-                        method += 1
-                if method == 2:
-                    try:
-                        new_mol, _ = DelComponent(mol)
-                    except:
+                    MR = mol_prop(molecule, "MR")
+                    new_MR = mol_prop(new_mol, "MR")
+                    if new_MR == None:
                         continue
-                    if new_mol == None:
-                        continue
-                    elif "." in new_mol:    
-                        continue
-                    try:
-                        mol = Chem.MolFromSmiles(new_mol)
-                    except:
-                        continue
-                print(new_mol)
-                if new_mol == None:
-                    continue
-                MR = mol_prop(molecule, "MR")
-                new_MR = mol_prop(new_mol, "MR")
-                if new_MR == None:
-                    continue
-                if MR > new_MR:
-                    template = random.choice(templates_low).format(molecule)
-                else:
-                    template = random.choice(templates_high).format(molecule)
+                    if MR > new_MR:
+                        template = random.choice(templates_low).format(molecule)
+                    else:
+                        template = random.choice(templates_high).format(molecule)
 
-                print(template)
-                data_frame["SubTask"].append(itemtask)
-                data_frame["Instruction"].append(template)
-                data_frame["molecule"].append(new_mol)
+                    print(template)
+                    data_frame["SubTask"].append(itemtask)
+                    data_frame["Instruction"].append(template)
+                    data_frame["molecule"].append(new_mol)
 
-            elif itemtask == 'QED':
-                method = random.randint(0, 2)
-                templates_low = ["Please optimize the molecule {} to have a lower QED value.", "Modify the molecule {} to decrease its QED value.", "Optimize the molecule {} to have a lower QED value.", "Please modify the molecule {} to decrease its QED value.", "Modify the molecule {} to have a lower QED value."]
-                templates_high = ["Please optimize the molecule {} to have a higher QED value.", "Modify the molecule {} to increase its QED value.", "Optimize the molecule {} to have a higher QED value.", "Please modify the molecule {} to increase its QED value.", "Modify the molecule {} to have a higher QED value."]
-                
-                if method == 0:
-                    try:
-                        new_mol, _ = AddComponent(mol)
-                    except:
-                        continue
+                elif itemtask == 'QED':
+                    method = random.randint(0, 2)
+                    templates_low = ["Please optimize the molecule {} to have a lower QED value.", "Modify the molecule {} to decrease its QED value.", "Optimize the molecule {} to have a lower QED value.", "Please modify the molecule {} to decrease its QED value.", "Modify the molecule {} to have a lower QED value."]
+                    templates_high = ["Please optimize the molecule {} to have a higher QED value.", "Modify the molecule {} to increase its QED value.", "Optimize the molecule {} to have a higher QED value.", "Please modify the molecule {} to increase its QED value.", "Modify the molecule {} to have a higher QED value."]
+                    
+                    if method == 0:
+                        try:
+                            new_mol, _ = AddComponent(mol)
+                        except:
+                            continue
+                        if new_mol == None:
+                            method += 1
+                        elif "." in new_mol:    
+                            method += 1
+                        try:
+                            mol = Chem.MolFromSmiles(new_mol)
+                        except:
+                            method += 1
+                    if method == 1:
+                        try:
+                            new_mol, _, _ = SubComponent(mol)
+                        except:
+                            continue
+                        if new_mol == None:
+                            method += 1
+                        elif "." in new_mol:    
+                            method += 1
+                        try:
+                            mol = Chem.MolFromSmiles(new_mol)
+                        except:
+                            method += 1
+                    if method == 2:
+                        try:
+                            new_mol, _ = DelComponent(mol)
+                        except:
+                            print(molecule)
+                            continue
+                        if new_mol == None:
+                            continue
+                        elif "." in new_mol:    
+                            continue
+                        try:
+                            mol = Chem.MolFromSmiles(new_mol)
+                        except:
+                            continue
+                    print(new_mol)
                     if new_mol == None:
-                        method += 1
-                    elif "." in new_mol:    
-                        method += 1
-                    try:
-                        mol = Chem.MolFromSmiles(new_mol)
-                    except:
-                        method += 1
-                if method == 1:
-                    try:
-                        new_mol, _, _ = SubComponent(mol)
-                    except:
                         continue
-                    if new_mol == None:
-                        method += 1
-                    elif "." in new_mol:    
-                        method += 1
-                    try:
-                        mol = Chem.MolFromSmiles(new_mol)
-                    except:
-                        method += 1
-                if method == 2:
-                    try:
-                        new_mol, _ = DelComponent(mol)
-                    except:
-                        print(molecule)
+                    QED = mol_prop(molecule, "qed")
+                    new_QED = mol_prop(new_mol, "qed")
+                    if new_QED == None:
                         continue
-                    if new_mol == None:
-                        continue
-                    elif "." in new_mol:    
-                        continue
-                    try:
-                        mol = Chem.MolFromSmiles(new_mol)
-                    except:
-                        continue
-                print(new_mol)
-                if new_mol == None:
-                    continue
-                QED = mol_prop(molecule, "qed")
-                new_QED = mol_prop(new_mol, "qed")
-                if new_QED == None:
-                    continue
-                if QED > new_QED:
-                    template = random.choice(templates_low).format(molecule)
-                else:
-                    template = random.choice(templates_high).format(molecule)
+                    if QED > new_QED:
+                        template = random.choice(templates_low).format(molecule)
+                    else:
+                        template = random.choice(templates_high).format(molecule)
 
-                print(template)
-                data_frame["SubTask"].append(itemtask)
-                data_frame["Instruction"].append(template)
-                data_frame["molecule"].append(new_mol)
-            cur += 1
-            if cur >= args.num_samples:
-                break    
+                    print(template)
+                    data_frame["SubTask"].append(itemtask)
+                    data_frame["Instruction"].append(template)
+                    data_frame["molecule"].append(new_mol)
+                cur += 1
+                pbar.update(1)
+                if cur >= args.num_samples:
+                    break    
     df = pd.DataFrame(data_frame)
     df.to_csv(file_dir + "/train.csv", index=False)
     
