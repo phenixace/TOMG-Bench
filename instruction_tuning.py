@@ -20,6 +20,7 @@ parser = ArgumentParser()
 parser.add_argument("--model", type=str, default="facebook/galactica-125m")
 parser.add_argument("--name", type=str, default="facebook/galactica-125m")
 parser.add_argument("--task", type=str, default="instruction_tuning")
+parser.add_argument("--data_scale", type=str, default="light")
 parser.add_argument("--output_dir", type=str, default="./ckp/")
 
 # training parameters
@@ -46,6 +47,8 @@ parser.add_argument("--fp16", default=False, action="store_true")
 
 args = parser.parse_args()
 
+args.output_dir = os.path.join(args.output_dir, args.name + "-" + args.data_scale)
+
 # set random seeds
 torch.manual_seed(args.seed)
 torch.cuda.manual_seed(args.seed)
@@ -61,7 +64,7 @@ print("==========================")
 
 gradient_accumulation_steps = args.batch_size // args.micro_batch_size
 # load dataset
-train_data = InsTDataset()
+train_data = InsTDataset(args.data_scale)
 # load tokenizer
 tokenizer = AutoTokenizer.from_pretrained(args.model)
 
@@ -111,7 +114,7 @@ if ddp:
     device_map = {"": int(os.environ.get("LOCAL_RANK") or 0)}
     gradient_accumulation_steps = gradient_accumulation_steps // world_size
 
-model = AutoModelForCausalLM.from_pretrained(args.base_model, load_in_8bit=True if args.int8 else False, torch_dtype=torch.float16 if args.fp16 else torch.float32, device_map=device_map)
+model = AutoModelForCausalLM.from_pretrained(args.model, load_in_8bit=True if args.int8 else False, torch_dtype=torch.float16 if args.fp16 else torch.float32, device_map=device_map)
 if args.int8:
     model = prepare_model_for_kbit_training(model)
 
@@ -164,13 +167,13 @@ train_args = TrainingArguments(
     fp16=True if args.fp16 else False,
     logging_steps=args.logging_steps,
     optim="adamw_torch",
-    evaluation_strategy="steps" if args.valid else "no",
+    evaluation_strategy="no",
     save_strategy="steps",
-    eval_steps=args.eval_interval if args.valid else None,
+    eval_steps=None,
     save_steps=args.save_interval,
     output_dir=args.output_dir,
     save_total_limit=20,
-    load_best_model_at_end=True if args.valid else False,
+    load_best_model_at_end=False,
     ddp_find_unused_parameters=False if ddp else None,
     # group_by_length=args.group_by_length,
     report_to="wandb",
@@ -187,4 +190,4 @@ trainer = Trainer(
 
 model.config.use_cache = False
     
-trainer.train(resume_from_checkpoint=args.resume_from_checkpoint)
+trainer.train()

@@ -737,6 +737,8 @@ elif args.task == "InstructionTuning":
                     
                     if "." in new_mol:    
                         continue
+                    elif "*" in new_mol:
+                        continue
                     try:
                         mol = Chem.MolFromSmiles(new_mol)
                     except:
@@ -762,7 +764,9 @@ elif args.task == "InstructionTuning":
                     else:
                         template = random.choice(templates).format(molecule, group, new_group)
                     print(template)
-                    if "." in new_mol:    
+                    if "." in new_mol:    # broken SMILES
+                        continue
+                    elif "*" in new_mol:   # unkekulized SMILES
                         continue
                     try:
                         mol = Chem.MolFromSmiles(new_mol)
@@ -791,6 +795,8 @@ elif args.task == "InstructionTuning":
                         template = random.choice(templates).format(molecule, group)
                     if "." in new_mol:    
                         continue
+                    elif "*" in new_mol:
+                        continue
                     try:
                         mol = Chem.MolFromSmiles(new_mol)
                     except:
@@ -814,6 +820,8 @@ elif args.task == "InstructionTuning":
                             method += 1
                         elif "." in new_mol:    
                             method += 1
+                        elif "*" in new_mol:
+                            method += 1
                         try:
                             mol = Chem.MolFromSmiles(new_mol)
                         except:
@@ -827,6 +835,8 @@ elif args.task == "InstructionTuning":
                             method += 1
                         elif "." in new_mol:    
                             method += 1
+                        elif "*" in new_mol:
+                            method += 1
                         try:
                             mol = Chem.MolFromSmiles(new_mol)
                         except:
@@ -839,6 +849,8 @@ elif args.task == "InstructionTuning":
                         if new_mol == None:
                             continue
                         elif "." in new_mol:    
+                            continue
+                        elif "*" in new_mol:
                             continue
                         try:
                             mol = Chem.MolFromSmiles(new_mol)
@@ -875,6 +887,8 @@ elif args.task == "InstructionTuning":
                             method += 1
                         elif "." in new_mol:    
                             method += 1
+                        elif "*" in new_mol:
+                            method += 1
                         try:
                             mol = Chem.MolFromSmiles(new_mol)
                         except:
@@ -888,6 +902,8 @@ elif args.task == "InstructionTuning":
                             method += 1
                         elif "." in new_mol:    
                             method += 1
+                        elif "*" in new_mol:
+                            method += 1
                         try:
                             mol = Chem.MolFromSmiles(new_mol)
                         except:
@@ -900,6 +916,8 @@ elif args.task == "InstructionTuning":
                         if new_mol == None:
                             continue
                         elif "." in new_mol:    
+                            continue
+                        elif "*" in new_mol:
                             continue
                         try:
                             mol = Chem.MolFromSmiles(new_mol)
@@ -936,6 +954,8 @@ elif args.task == "InstructionTuning":
                             method += 1
                         elif "." in new_mol:    
                             method += 1
+                        elif "*" in new_mol:
+                            method += 1
                         try:
                             mol = Chem.MolFromSmiles(new_mol)
                         except:
@@ -948,6 +968,8 @@ elif args.task == "InstructionTuning":
                         if new_mol == None:
                             method += 1
                         elif "." in new_mol:    
+                            method += 1
+                        elif "*" in new_mol:
                             method += 1
                         try:
                             mol = Chem.MolFromSmiles(new_mol)
@@ -962,6 +984,8 @@ elif args.task == "InstructionTuning":
                         if new_mol == None:
                             continue
                         elif "." in new_mol:    
+                            continue
+                        elif "*" in new_mol:
                             continue
                         try:
                             mol = Chem.MolFromSmiles(new_mol)

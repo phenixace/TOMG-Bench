@@ -52,10 +52,19 @@ class TMGDataset(Dataset):
         return sample, target
     
 class InsTDataset(Dataset):
-    def __init__(self, data, targets, transform=None):
-        self.data = data
-        self.targets = targets
-        self.transform = transform
+    def __init__(self, data_scale):
+        filename = f'./data/instruction_tuning/{data_scale}/train.csv'
+        temp_data = pd.read_csv(filename)
+        self.tasks = temp_data["SubTask"].tolist()
+        self.instructions = temp_data["Instruction"].tolist()
+        self.molecules = temp_data["molecule"].tolist()
+        self.data = []
+        self.targets = []
+        for i in range(len(self.instructions)):
+            temp_data = "## User: " + self.instructions[i] + "\n## Assistant: "
+            temp_gt = temp_data + self.molecules[i]
+            self.data.append(temp_data)
+            self.targets.append(temp_gt)
 
     def __len__(self):
         return len(self.data)
@@ -63,9 +72,6 @@ class InsTDataset(Dataset):
     def __getitem__(self, idx):
         sample = self.data[idx]
         target = self.targets[idx]
-
-        if self.transform:
-            sample = self.transform(sample)
 
         return sample, target
 
