@@ -12,7 +12,7 @@ import transformers
 import pandas as pd
 from tqdm import tqdm
 from transformers import AutoTokenizer, AutoModelForCausalLM, T5ForConditionalGeneration, GenerationConfig
-from utils.dataset import OMGDataset, TMGDataset
+from utils.dataset import OMGDataset, TMGDataset, OMGInsTDataset
 
 from peft import (
     PeftModel
@@ -88,11 +88,14 @@ def main():
 
     # load dataset
     if args.benchmark == "open_generation":
-        if args.selfies:
-            test_dataset = OMGDataset(args.task, args.subtask, use_selfies=True)
+        if args.model_type == "t5":
+            if args.selfies:
+                test_dataset = OMGDataset(args.task, args.subtask, use_selfies=True)
+            else:
+                test_dataset = OMGDataset(args.task, args.subtask)
         else:
-            test_dataset = OMGDataset(args.task, args.subtask)
-    elif args.benchmark == "template_generation":
+            test_dataset = OMGInsTDataset(args.task, args.subtask)
+    elif args.benchmark == "targeted_generation":
         test_dataset = TMGDataset(args.task, args.subtask)
     else:
         raise ValueError("Invalid benchmark: {}".format(args.benchmark))
