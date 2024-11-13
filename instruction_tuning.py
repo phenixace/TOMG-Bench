@@ -18,7 +18,7 @@ from peft import (
 
 parser = ArgumentParser()
 parser.add_argument("--model", type=str, default="facebook/galactica-125m")
-parser.add_argument("--name", type=str, default="facebook/galactica-125m")
+parser.add_argument("--name", type=str, default="galactica-125m")
 parser.add_argument("--task", type=str, default="instruction_tuning")
 parser.add_argument("--data_scale", type=str, default="light")
 parser.add_argument("--output_dir", type=str, default="./ckp/")
@@ -28,7 +28,6 @@ parser.add_argument("--batch_size", type=int, default=32)
 parser.add_argument("--micro_batch_size", type=int, default=1)
 parser.add_argument("--num_epochs", type=int, default=10)
 parser.add_argument("--save_interval", type=int, default=1000)
-parser.add_argument("--eval_interval", type=int, default=1000)
 parser.add_argument("--logging_steps", type=int, default=10)
 parser.add_argument("--warm_up_steps", type=int, default=1000)
 parser.add_argument("--learning_rate", type=float, default=2e-4)
@@ -36,8 +35,8 @@ parser.add_argument("--cutoff_len", type=int, default=2048)
 parser.add_argument("--seed", type=int, default=42)
 
 # lora parameters
-parser.add_argument("--lora_r", type=int, default=32)
-parser.add_argument("--lora_alpha", type=int, default=64)
+parser.add_argument("--lora_r", type=int, default=64)
+parser.add_argument("--lora_alpha", type=int, default=128)
 parser.add_argument("--lora_dropout", type=float, default=0.1)
 
 parser.add_argument("--train_on_inputs", default=False, action="store_true")
@@ -167,7 +166,7 @@ train_args = TrainingArguments(
     fp16=True if args.fp16 else False,
     logging_steps=args.logging_steps,
     optim="adamw_torch",
-    evaluation_strategy="no",
+    eval_strategy="no",
     save_strategy="steps",
     eval_steps=None,
     save_steps=args.save_interval,
