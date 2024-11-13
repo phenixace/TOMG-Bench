@@ -131,9 +131,13 @@ def main():
         for idx in range(int(len(test_dataset)*(args.cur-1)/args.partition)+start_pos, int(len(test_dataset)*args.cur/args.partition)):
             error_count = 0
             while True:
-                print(test_dataset.instruction[idx])
+                if args.model_type == "t5":
+                    text_input = test_dataset.instructions[idx]
+                else:
+                    text_input = test_dataset.data[idx]
+                print(text_input)
                 
-                model_input = tokenizer(test_dataset.instruction[idx], return_tensors="pt")["input_ids"].cuda()
+                model_input = tokenizer(text_input, return_tensors="pt")["input_ids"].cuda()
                 # labels = tokenizer(test_data[idx][1], return_tensors="pt")
                 with torch.no_grad():
                     # print(model_input) 

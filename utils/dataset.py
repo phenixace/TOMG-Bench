@@ -38,14 +38,14 @@ class OMGInsTDataset(Dataset):
         filename = f'./data/benchmarks/open_generation/{maintask}/{subtask}/test.csv'
         temp_data = pd.read_csv(filename)
         self.instructions = temp_data["Instruction"].tolist()
-        self.molecules = temp_data["molecule"].tolist()
+        
         self.data = []
         self.targets = []
         for i in range(len(self.instructions)):
             temp_data = "## User: " + self.instructions[i] + "\n## Assistant: "
-            temp_gt = temp_data + self.molecules[i]
+            
             self.data.append(temp_data)
-            self.targets.append(temp_gt)
+            self.targets.append("")
 
     def __len__(self):
         return len(self.data)
