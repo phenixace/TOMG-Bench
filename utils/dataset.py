@@ -75,7 +75,7 @@ class TMGDataset(Dataset):
         return sample, target
     
 class InsTDataset(Dataset):
-    def __init__(self, data_scale):
+    def __init__(self, data_scale, eos_token):
         filename = f'./data/instruction_tuning/{data_scale}/train.csv'
         temp_data = pd.read_csv(filename)
         self.tasks = temp_data["SubTask"].tolist()
@@ -85,7 +85,7 @@ class InsTDataset(Dataset):
         self.targets = []
         for i in range(len(self.instructions)):
             temp_data = "## User: " + self.instructions[i] + "\n## Assistant: "
-            temp_gt = temp_data + self.molecules[i]
+            temp_gt = temp_data + self.molecules[i] + eos_token
             self.data.append(temp_data)
             self.targets.append(temp_gt)
 

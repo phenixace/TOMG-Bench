@@ -20,7 +20,7 @@ parser = ArgumentParser()
 parser.add_argument("--model", type=str, default="facebook/galactica-125m")
 parser.add_argument("--name", type=str, default="galactica-125m")
 parser.add_argument("--task", type=str, default="instruction_tuning")
-parser.add_argument("--data_scale", type=str, default="light")
+parser.add_argument("--data_scale", type=str, default="large")
 parser.add_argument("--output_dir", type=str, default="./ckp/")
 
 # training parameters
@@ -43,7 +43,7 @@ parser.add_argument("--train_on_inputs", default=False, action="store_true")
 parser.add_argument("--disable_lora", default=False, action="store_true")
 parser.add_argument("--int8", default=False, action="store_true")
 parser.add_argument("--fp16", default=False, action="store_true")
-
+parser.add_argument("--add_eos", default=True, action="store_false")
 args = parser.parse_args()
 
 args.output_dir = os.path.join(args.output_dir, args.name + "-" + args.data_scale)
@@ -63,7 +63,9 @@ print("==========================")
 
 gradient_accumulation_steps = args.batch_size // args.micro_batch_size
 # load dataset
-train_data = InsTDataset(args.data_scale)
+if "galactica" in args.name:
+    args.add_eos = "</s>"
+train_data = InsTDataset(args.data_scale, args.add_eos)
 # load tokenizer
 tokenizer = AutoTokenizer.from_pretrained(args.model)
 
