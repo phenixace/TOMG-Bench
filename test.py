@@ -40,7 +40,7 @@ def main():
     parser.add_argument("--top_k", type=int, default=40)
     parser.add_argument("--num_beams", type=int, default=1)
     parser.add_argument("--num_return_sequences", type=int, default=1)
-    parser.add_argument("--max_new_tokens", type=int, default=512)
+    parser.add_argument("--max_new_tokens", type=int, default=128)
     
     parser.add_argument("--seed", type=int, default=42)
     

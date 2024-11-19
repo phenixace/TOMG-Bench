@@ -6,13 +6,14 @@ from utils.evaluation import mol_prop
 import datasets
 from rdkit import Chem, DataStructs
 from rdkit.Chem import AllChem
+from rdkit.Chem import Draw
 from tqdm import tqdm
 
 parser = ArgumentParser()
 parser.add_argument("--task", type=str, default="InstructionTuning")
 parser.add_argument("--subtask", type=str, default="BasicProp")
 parser.add_argument("--seed", type=int, default=42)
-parser.add_argument("--num_samples", type=int, default=90000)
+parser.add_argument("--num_samples", type=int, default=18000)
 args = parser.parse_args()
 
 random.seed(args.seed)
@@ -33,7 +34,9 @@ def AddComponent(mol):
     groups = ["benzene ring", "hydroxyl", "aldehyde", "carboxyl", "amide", "amine", "nitro", "halo", "nitrile", "thiol"]
     groups_weights = [15, 15, 5, 5, 10, 5, 5, 5, 1, 1]
     groups_SMARTS = ['[cR1]1[cR1][cR1][cR1][cR1][cR1]1', '[OX2H]', '[CX3H1](=O)[#6]', '[CX3](=O)[OX2H1]', '[NX3][CX3](=[OX1])[#6]', '[NX3;H2,H1;!$(NC=O)]', '[$([NX3](=O)=O),$([NX3+](=O)[O-])][!#8]', '[F,Cl,Br,I]', '[NX1]#[CX2]', '[#16X2H]']
+    atoms_for_attach = [[0,1,2,3,4,5],[0], [0, 2], [0], [1], [0], [0], [0], [1], [0]]
     groups_SMARTS_dict = dict(zip(groups, groups_SMARTS))
+    groups_atoms_dict = dict(zip(groups, atoms_for_attach))
     
     group = random.choices(groups, groups_weights, k=1)[0]
     
@@ -57,6 +60,7 @@ def AddComponent(mol):
     for atom in functional_group.GetAtoms():
         new_atom_idx = rwmol.AddAtom(atom)
         atom_mapping[atom.GetIdx()] = new_atom_idx
+    
 
     # 添加官能团中的键到新分子中
     for bond in functional_group.GetBonds():
@@ -64,7 +68,10 @@ def AddComponent(mol):
         end_idx = atom_mapping[bond.GetEndAtomIdx()]
         rwmol.AddBond(begin_idx, end_idx, bond.GetBondType())
     
-    rwmol.AddBond(atom_to_attach, new_atom_idx, Chem.BondType.SINGLE)
+    atom_for_attach = atom_mapping[random.choice(groups_atoms_dict[group])]
+    print(atom_for_attach)
+    
+    rwmol.AddBond(atom_to_attach, atom_for_attach, Chem.BondType.SINGLE)
 
     new_mol = rwmol.GetMol()
     new_mol = Chem.MolToSmiles(new_mol)
@@ -741,6 +748,7 @@ elif args.task == "InstructionTuning":
                         continue
                     try:
                         mol = Chem.MolFromSmiles(new_mol)
+                        img = Draw.MolToImage(mol)
                     except:
                         continue
                     data_frame["SubTask"].append(itemtask)
@@ -770,6 +778,7 @@ elif args.task == "InstructionTuning":
                         continue
                     try:
                         mol = Chem.MolFromSmiles(new_mol)
+                        img = Draw.MolToImage(mol)
                     except:
                         continue
                     data_frame["SubTask"].append(itemtask)
@@ -799,6 +808,7 @@ elif args.task == "InstructionTuning":
                         continue
                     try:
                         mol = Chem.MolFromSmiles(new_mol)
+                        img = Draw.MolToImage(mol)
                     except:
                         continue
                     print(template)
@@ -824,6 +834,7 @@ elif args.task == "InstructionTuning":
                             method += 1
                         try:
                             mol = Chem.MolFromSmiles(new_mol)
+                            img = Draw.MolToImage(mol)
                         except:
                             method += 1
                     if method == 1:
@@ -839,6 +850,7 @@ elif args.task == "InstructionTuning":
                             method += 1
                         try:
                             mol = Chem.MolFromSmiles(new_mol)
+                            img = Draw.MolToImage(mol)
                         except:
                             method += 1
                     if method == 2:
@@ -854,6 +866,7 @@ elif args.task == "InstructionTuning":
                             continue
                         try:
                             mol = Chem.MolFromSmiles(new_mol)
+                            img = Draw.MolToImage(mol)
                         except:
                             continue
                     print(new_mol)
@@ -891,6 +904,7 @@ elif args.task == "InstructionTuning":
                             method += 1
                         try:
                             mol = Chem.MolFromSmiles(new_mol)
+                            img = Draw.MolToImage(mol)
                         except:
                             method += 1
                     if method == 1:
@@ -906,6 +920,7 @@ elif args.task == "InstructionTuning":
                             method += 1
                         try:
                             mol = Chem.MolFromSmiles(new_mol)
+                            img = Draw.MolToImage(mol)
                         except:
                             method += 1
                     if method == 2:
@@ -921,6 +936,7 @@ elif args.task == "InstructionTuning":
                             continue
                         try:
                             mol = Chem.MolFromSmiles(new_mol)
+                            img = Draw.MolToImage(mol)
                         except:
                             continue
                     print(new_mol)
@@ -958,6 +974,7 @@ elif args.task == "InstructionTuning":
                             method += 1
                         try:
                             mol = Chem.MolFromSmiles(new_mol)
+                            img = Draw.MolToImage(mol)
                         except:
                             method += 1
                     if method == 1:
@@ -973,6 +990,7 @@ elif args.task == "InstructionTuning":
                             method += 1
                         try:
                             mol = Chem.MolFromSmiles(new_mol)
+                            img = Draw.MolToImage(mol)
                         except:
                             method += 1
                     if method == 2:
@@ -989,6 +1007,7 @@ elif args.task == "InstructionTuning":
                             continue
                         try:
                             mol = Chem.MolFromSmiles(new_mol)
+                            img = Draw.MolToImage(mol)
                         except:
                             continue
                     print(new_mol)

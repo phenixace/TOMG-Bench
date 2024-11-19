@@ -117,7 +117,7 @@ class SourceDataset(Dataset):
         return sample, target
     
 if __name__ == '__main__':
-    dataset = OMGInsTDataset('MolEdit', 'AddComponent')
+    dataset = InsTDataset('medium', '<|end_of_text|>')
     print(len(dataset))
-    print(dataset[0])
-    print(dataset.instructions[0])
+    print(dataset[100])
+    print(dataset.targets[0:10])

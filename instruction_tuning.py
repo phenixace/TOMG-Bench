@@ -30,7 +30,7 @@ parser.add_argument("--num_epochs", type=int, default=10)
 parser.add_argument("--save_interval", type=int, default=1000)
 parser.add_argument("--logging_steps", type=int, default=10)
 parser.add_argument("--warm_up_steps", type=int, default=1000)
-parser.add_argument("--learning_rate", type=float, default=2e-4)
+parser.add_argument("--learning_rate", type=float, default=3e-4)
 parser.add_argument("--cutoff_len", type=int, default=2048)
 parser.add_argument("--seed", type=int, default=42)
 
@@ -63,13 +63,19 @@ print("==========================")
 
 gradient_accumulation_steps = args.batch_size // args.micro_batch_size
 # load dataset
-if "galactica" in args.name:
+if "galactica" in args.name or "mistral" in args.name:
     args.add_eos = "</s>"
+else:
+    args.add_eos = "<|end_of_text|>"
 train_data = InsTDataset(args.data_scale, args.add_eos)
 # load tokenizer
 tokenizer = AutoTokenizer.from_pretrained(args.model)
 
 train_data = Dataset.from_dict({"gt": train_data.targets, "raw": train_data.data})
+
+print("========Sanity Check========")
+print(train_data[0])
+print("============================")
 
 tokenizer.pad_token_id = (
     0  # unk. we want this to be different from the eos token
