@@ -25,13 +25,13 @@ parser.add_argument("--output_dir", type=str, default="./ckp/")
 
 # training parameters
 parser.add_argument("--batch_size", type=int, default=32)
-parser.add_argument("--micro_batch_size", type=int, default=1)
+parser.add_argument("--micro_batch_size", type=int, default=4)
 parser.add_argument("--num_epochs", type=int, default=10)
 parser.add_argument("--save_interval", type=int, default=1000)
 parser.add_argument("--logging_steps", type=int, default=10)
 parser.add_argument("--warm_up_steps", type=int, default=1000)
 parser.add_argument("--learning_rate", type=float, default=3e-4)
-parser.add_argument("--cutoff_len", type=int, default=2048)
+parser.add_argument("--cutoff_len", type=int, default=1024)
 parser.add_argument("--seed", type=int, default=42)
 
 # lora parameters
@@ -44,10 +44,12 @@ parser.add_argument("--disable_lora", default=False, action="store_true")
 parser.add_argument("--int8", default=False, action="store_true")
 parser.add_argument("--fp16", default=False, action="store_true")
 parser.add_argument("--add_eos", default=True, action="store_false")
+parser.add_argument("--specific_task", type=str, default="")
 args = parser.parse_args()
 
 args.output_dir = os.path.join(args.output_dir, args.name + "-" + args.data_scale)
-
+args.specific_task = None if args.specific_task == "" else args.specific_task
+args.add_special_token = True if "galactica" in args.name else False
 # set random seeds
 torch.manual_seed(args.seed)
 torch.cuda.manual_seed(args.seed)
@@ -67,14 +69,15 @@ if "galactica" in args.name or "mistral" in args.name:
     args.add_eos = "</s>"
 else:
     args.add_eos = "<|end_of_text|>"
-train_data = InsTDataset(args.data_scale, args.add_eos)
+train_data = InsTDataset(args.data_scale, args.add_eos, args.specific_task, args.add_special_token)
 # load tokenizer
 tokenizer = AutoTokenizer.from_pretrained(args.model)
 
 train_data = Dataset.from_dict({"gt": train_data.targets, "raw": train_data.data})
 
 print("========Sanity Check========")
-print(train_data[0])
+for i in range(10):
+    print(train_data[i]['gt'])
 print("============================")
 
 tokenizer.pad_token_id = (

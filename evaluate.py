@@ -15,7 +15,7 @@ parser.add_argument("--benchmark", type=str, default="open_generation")
 parser.add_argument("--task", type=str, default="MolOpt")
 parser.add_argument("--subtask", type=str, default="LogP")
 
-parser.add_argument("--output_dir", type=str, default="./new_predictions/")
+parser.add_argument("--output_dir", type=str, default="./predictions/")
 parser.add_argument("--calc_novelty", action="store_true", default=False)
 
 args = parser.parse_args()
