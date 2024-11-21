@@ -77,9 +77,9 @@ print("==============================")
 
 Baseurl = "https://api.claudeshop.top"
 if "gpt" in args.model:
-    Skey = "sk-sY1NKbcyzHaLIbQsoNyafYhx4OK8UWo4vbLmQTSWItiTOWHc"
+    Skey = "sk-" # your api key here
 else:
-    Skey = "sk-JeUHXQzwTsm5y7wVY5DAgnklttY9SuRdIQf8HfhEbIsW3Fjj"
+    Skey = "sk-" # your api key here
 
 """
 payload = json.dumps({
@@ -105,17 +105,6 @@ headers = {
    'Content-Type': 'application/json'
 }
 
-"""
-response = requests.request("POST", url, headers=headers, data=payload)
-
-# 解析 JSON 数据为 Python 字典
-data = response.json()
-
-# 获取 content 字段的值
-content = data
-
-print(content["choices"][0]["message"]["content"])
-"""
 
 error_records = []
 
