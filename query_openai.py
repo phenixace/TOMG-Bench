@@ -14,8 +14,6 @@ from transformers import pipeline
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
-# 使用中转链接可以和特定的API可以不必向openai发起请求，且请求无须魔法
-# 调用方式与openai官网一致，仅需修改baseurl
 parser = argparse.ArgumentParser()
 parser.add_argument("--name", type=str, default="GPT-4o")
 
@@ -78,7 +76,7 @@ print("Total length of the dataset:", len(inference_dataset))
 print("==============================")
 
 Baseurl = "https://api.claudeshop.top"
-if "4o" in args.name:
+if "gpt" in args.model:
     Skey = "sk-sY1NKbcyzHaLIbQsoNyafYhx4OK8UWo4vbLmQTSWItiTOWHc"
 else:
     Skey = "sk-JeUHXQzwTsm5y7wVY5DAgnklttY9SuRdIQf8HfhEbIsW3Fjj"
