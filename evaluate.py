@@ -12,8 +12,8 @@ parser.add_argument("--name", type=str, default="galactica-125M-small")
 
 # dataset settings
 parser.add_argument("--benchmark", type=str, default="open_generation")
-parser.add_argument("--task", type=str, default="MolOpt")
-parser.add_argument("--subtask", type=str, default="AtomNum")
+parser.add_argument("--task", type=str, default="MolCustom")
+parser.add_argument("--subtask", type=str, default="BondNum")
 
 parser.add_argument("--output_dir", type=str, default="./predictions/")
 parser.add_argument("--calc_novelty", action="store_true", default=False)
@@ -119,13 +119,13 @@ if args.benchmark == "open_generation":
                     flag = 1
                     for bond in bonds_type:
                         if bond == "rotatable":
-                            if mol_prop(target["outputs"][idx], "rot_bonds") == 0:
+                            if int(data[bond][idx]) == 0:
                                 continue
                             elif mol_prop(target["outputs"][idx], "rot_bonds") != int(data[bond][idx]):
                                 flag = 0
                                 break
                         else:
-                            if mol_prop(target["outputs"][idx], "num_" + bond + "_bonds") == 0:
+                            if int(data[bond][idx]) == 0:
                                 continue
                             elif mol_prop(target["outputs"][idx], "num_" + bond + "_bonds") != int(data[bond][idx]):
                                 flag = 0
