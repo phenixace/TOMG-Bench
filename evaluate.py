@@ -13,7 +13,7 @@ parser.add_argument("--name", type=str, default="galactica-125M-small")
 # dataset settings
 parser.add_argument("--benchmark", type=str, default="open_generation")
 parser.add_argument("--task", type=str, default="MolCustom")
-parser.add_argument("--subtask", type=str, default="BondNum")
+parser.add_argument("--subtask", type=str, default="AtomNum")
 
 parser.add_argument("--output_dir", type=str, default="./predictions/")
 parser.add_argument("--calc_novelty", action="store_true", default=False)
@@ -164,9 +164,8 @@ if args.benchmark == "open_generation":
                     successed.append(0)
 
             print("Success Rate:", sum(successed) / len(successed))
-            print("Validty:", len(valid_molecules) / len(data))
             print("Similarity:", sum(similarities) / len(similarities))
-
+            print("Validty:", len(valid_molecules) / len(data))
         elif args.subtask == "DelComponent":
             valid_molecules = []
             successed = []
@@ -190,8 +189,9 @@ if args.benchmark == "open_generation":
                     successed.append(0)
 
             print("Success Rate:", sum(successed) / len(successed))
-            print("Validty:", len(valid_molecules) / len(data))
             print("Similarity:", sum(similarities) / len(similarities))
+            print("Validty:", len(valid_molecules) / len(data))
+            
         elif args.subtask == "SubComponent":
             valid_molecules = []
             successed = []
@@ -220,8 +220,9 @@ if args.benchmark == "open_generation":
                     successed.append(0)
 
             print("Success Rate:", sum(successed) / len(successed))
-            print("Validty:", len(valid_molecules) / len(data))
             print("Similarity:", sum(similarities) / len(similarities))
+            print("Validty:", len(valid_molecules) / len(data))
+            
 
     elif args.task == "MolOpt":
         if args.subtask == "LogP":
