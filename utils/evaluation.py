@@ -275,6 +275,6 @@ def calculate_basic_property(smiles, prop):
         raise ValueError(f'Property {prop} not supported')
     
 if __name__ == '__main__':
-    smiles = 'C(=O)OC(=O)C'
+    smiles = 'CC#CC(C)C1CCCC1'
 
-    print(mol_prop(smiles, 'num_anhydride'))
+    print(mol_prop(smiles, 'num_single_bonds'))
