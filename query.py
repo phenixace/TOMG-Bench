@@ -99,7 +99,7 @@ error_records = []
 if args.load_lora == True:
     from peft import PeftModel
     tokenizer = AutoTokenizer.from_pretrained(args.model, trust_remote_code=True)
-    model = AutoModelForCausalLM.from_pretrained(args.model, low_cpu_mem_usage=True, **kwargs)
+    model = AutoModelForCausalLM.from_pretrained(args.model, torch_dtype=torch.bfloat16, low_cpu_mem_usage=True, trust_remote_code=True).to(device).eval()
     print(f"Loading LoRA weights from {args.lora_model_path}")
     model = PeftModel.from_pretrained(model, args.lora_model_path)
     print(f"Merging weights")
