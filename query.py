@@ -11,12 +11,18 @@ import pandas as pd
 from tqdm import tqdm
 from rdkit import Chem
 from utils.dataset import OMGDataset, TMGDataset
+import transformers
+from transformers import pipeline
+import torch
+from transformers import AutoTokenizer, AutoModelForCausalLM
 
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--model", type=str, default="quantized_models/llama3-70b/")
 parser.add_argument("--name", type=str, default="llama3-70B")
 parser.add_argument("--port", type=int, default=8000)
+parser.add_argument("--load_lora", type=bool, default=False)
+parser.add_argument("--lora_model_path", type=str, default="")
 # dataset settings
 parser.add_argument("--benchmark", type=str, default="open_generation")
 parser.add_argument("--task", type=str, default="MolCustom")
@@ -53,7 +59,7 @@ for attr, value in args.__dict__.items():
 
 # Set OpenAI's API key and API base to use vLLM's API server.
 openai_api_key = "EMPTY"
-openai_api_base = "http://localhost:{}/v1".format(args.port)
+openai_api_base = "http://10.140.24.31:{}/v1".format(args.port)
 
 client = OpenAI(
     api_key=openai_api_key,
@@ -90,6 +96,39 @@ print("==============================")
 
 error_records = []
 
+if args.load_lora == True:
+    from peft import PeftModel
+    tokenizer = AutoTokenizer.from_pretrained(args.model, trust_remote_code=True)
+    model = AutoModelForCausalLM.from_pretrained(args.model, low_cpu_mem_usage=True, **kwargs)
+    print(f"Loading LoRA weights from {args.lora_model_path}")
+    model = PeftModel.from_pretrained(model, args.lora_model_path)
+    print(f"Merging weights")
+    model = model.merge_and_unload()
+    print('Convert to BF16...')
+    model = model.to(torch.bfloat16)
+
+else:
+    device = torch.device('cuda')
+    tokenizer = AutoTokenizer.from_pretrained(args.model, trust_remote_code=True)
+    model = AutoModelForCausalLM.from_pretrained(
+        args.model,
+        torch_dtype=torch.bfloat16,
+        low_cpu_mem_usage=True,
+        trust_remote_code=True
+    ).to(device).eval()
+
+
+pipeline = transformers.pipeline(
+        "text-generation",
+        model=args.model,
+        tokenizer=tokenizer, 
+        model_kwargs={"torch_dtype": torch.bfloat16},
+        device_map="auto",
+        temperature=args.temperature,
+        trust_remote_code=True,
+        top_p=args.top_p,
+)
+
 
 with tqdm(total=len(inference_dataset)-start_pos) as pbar:
     for idx in range(start_pos, len(inference_dataset)):
@@ -97,17 +136,36 @@ with tqdm(total=len(inference_dataset)-start_pos) as pbar:
         error_allowance = 0
         while True:
             try:
-                completion = client.chat.completions.create(
-                    model=args.model,
-                    messages=inference_dataset[idx],
-                    max_tokens=args.max_new_tokens,
-                    temperature=args.temperature,
-                    top_p=args.top_p,
-                    n=args.num_return_sequences,
-                    stop=["</s>", "<|end_of_text|>", "<|eot_id|>"],
-                    seed=cur_seed
-                )
-                s = completion.choices[0].message.content
+                """
+                    completion = client.chat.completions.create(
+                        model=args.model,
+                        messages=inference_dataset[idx],
+                        max_tokens=args.max_new_tokens,
+                        temperature=args.temperature,
+                        top_p=args.top_p,
+                        n=args.num_return_sequences,
+                        stop=["</s>", "<|end_of_text|>", "<|eot_id|>"],
+                        seed=cur_seed
+                    )
+                    s = completion.choices[0].message.content
+                """
+                    
+                prompt = inference_dataset[idx]
+                inputs = tokenizer.apply_chat_template(prompt,
+                                            add_generation_prompt=True,
+                                            tokenize=True,
+                                            return_tensors="pt",
+                                            return_dict=True
+                                            )
+                inputs = inputs.to(device)
+                gen_kwargs = {"max_length": args.max_new_tokens, "do_sample": True, "temperature": args.temperature, "top_p": args.top_p}
+                #outputs = pipeline(prompt, max_new_tokens=args.max_new_tokens)
+                with torch.no_grad():
+                        outputs = model.generate(**inputs, **gen_kwargs)
+                        outputs = outputs[:, inputs['input_ids'].shape[1]:]
+                        s = tokenizer.decode(outputs[0], skip_special_tokens=True)
+            
+            
             except:
                 # change random seed
                 cur_seed += 1
@@ -118,6 +176,7 @@ with tqdm(total=len(inference_dataset)-start_pos) as pbar:
                     break
                 else:
                     continue
+            
             
             s = s.replace('""', '"').strip()
             print("Raw:", s)
