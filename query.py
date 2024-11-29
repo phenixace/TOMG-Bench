@@ -96,6 +96,8 @@ print("==============================")
 
 error_records = []
 
+device = torch.device('cuda')
+
 if args.load_lora == True:
     from peft import PeftModel
     tokenizer = AutoTokenizer.from_pretrained(args.model, trust_remote_code=True)
@@ -108,7 +110,7 @@ if args.load_lora == True:
     model = model.to(torch.bfloat16)
 
 else:
-    device = torch.device('cuda')
+    #device = torch.device('cuda')
     tokenizer = AutoTokenizer.from_pretrained(args.model, trust_remote_code=True)
     model = AutoModelForCausalLM.from_pretrained(
         args.model,
