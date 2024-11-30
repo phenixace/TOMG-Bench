@@ -15,6 +15,7 @@ import transformers
 from transformers import pipeline
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
+from accelerate import dispatch_model, infer_auto_device_map
 
 
 parser = argparse.ArgumentParser()
@@ -96,12 +97,25 @@ print("==============================")
 
 error_records = []
 
-device = torch.device('cuda')
+#device = torch.device('cuda')
+
+device_map = "auto"
+world_size = int(os.environ.get("WORLD_SIZE", 1))
+ddp = world_size > 1
+if ddp:
+    device_map = {"": int(os.environ.get("LOCAL_RANK") or 0)}
+    #gradient_accumulation_steps = gradient_accumulation_steps // world_size
+
+if not ddp and torch.cuda.device_count() > 1:
+    # keeps Trainer from trying its own DataParallelism when more than 1 gpu is available
+    model.is_parallelizable = True
+    model.model_parallel = True
+
 
 if args.load_lora == True:
     from peft import PeftModel
     tokenizer = AutoTokenizer.from_pretrained(args.model, trust_remote_code=True)
-    model = AutoModelForCausalLM.from_pretrained(args.model, torch_dtype=torch.bfloat16, low_cpu_mem_usage=True, trust_remote_code=True).to(device).eval()
+    model = AutoModelForCausalLM.from_pretrained(args.model, torch_dtype=torch.bfloat16, low_cpu_mem_usage=True, attn_implementation="eager", trust_remote_code=True).eval()
     print(f"Loading LoRA weights from {args.lora_model_path}")
     model = PeftModel.from_pretrained(model, args.lora_model_path)
     print(f"Merging weights")
@@ -109,15 +123,21 @@ if args.load_lora == True:
     print('Convert to BF16...')
     model = model.to(torch.bfloat16)
 
+    device_map = infer_auto_device_map(
+                    model,
+                    dtype='bfloat16')
+
+    model = dispatch_model(model, device_map=device_map)
+
 else:
-    #device = torch.device('cuda')
     tokenizer = AutoTokenizer.from_pretrained(args.model, trust_remote_code=True)
     model = AutoModelForCausalLM.from_pretrained(
         args.model,
         torch_dtype=torch.bfloat16,
         low_cpu_mem_usage=True,
-        trust_remote_code=True
-    ).to(device).eval()
+        trust_remote_code=True,
+        device_map=device_map, 
+    ).eval()
 
 
 pipeline = transformers.pipeline(
@@ -159,7 +179,7 @@ with tqdm(total=len(inference_dataset)-start_pos) as pbar:
                                             return_tensors="pt",
                                             return_dict=True
                                             )
-                inputs = inputs.to(device)
+                inputs = inputs.to(model.device)
                 gen_kwargs = {"max_length": args.max_new_tokens, "do_sample": True, "temperature": args.temperature, "top_p": args.top_p}
                 #outputs = pipeline(prompt, max_new_tokens=args.max_new_tokens)
                 with torch.no_grad():
