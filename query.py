@@ -115,19 +115,13 @@ if not ddp and torch.cuda.device_count() > 1:
 if args.load_lora == True:
     from peft import PeftModel
     tokenizer = AutoTokenizer.from_pretrained(args.model, trust_remote_code=True)
-    model = AutoModelForCausalLM.from_pretrained(args.model, torch_dtype=torch.bfloat16, low_cpu_mem_usage=True, attn_implementation="eager", trust_remote_code=True).eval()
+    model = AutoModelForCausalLM.from_pretrained(args.model, torch_dtype=torch.bfloat16, low_cpu_mem_usage=True, attn_implementation="eager", device_map=device_map, trust_remote_code=True).eval()
     print(f"Loading LoRA weights from {args.lora_model_path}")
     model = PeftModel.from_pretrained(model, args.lora_model_path)
     print(f"Merging weights")
     model = model.merge_and_unload()
     print('Convert to BF16...')
     model = model.to(torch.bfloat16)
-
-    device_map = infer_auto_device_map(
-                    model,
-                    dtype='bfloat16')
-
-    model = dispatch_model(model, device_map=device_map)
 
 else:
     tokenizer = AutoTokenizer.from_pretrained(args.model, trust_remote_code=True)
