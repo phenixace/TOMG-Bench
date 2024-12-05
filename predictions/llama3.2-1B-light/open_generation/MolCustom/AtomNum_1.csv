@@ -1,0 +1,108 @@
+outputs
+0,"## User: Please generate a molecule with 8 carbon atoms, 1 nitrogen atom, and 3 oxygen atoms.
+## Assistant: 1(CC(=O)[O-])ccc(F)c1OCC1CC1"
+0,"## User: Please generate a molecule composed of 35 carbon atoms and 1 oxygen atom.
+## Assistant: 1c2ccccc2-c2cc(C(C)(C)C)cc(C#Cc3ccccc3)c12"
+0,"## User: There is a molecule consisting of 15 carbon atoms and 2 bromine atoms.
+## Assistant: 1(Cc2cc(Br)c(Br)cc2C#N)CCOC1"
+0,"## User: There is a molecule with 35 carbon atoms.
+## Assistant: 9 single bonds, 8 rotatable bonds, and 18 aromatic bonds.
+## Assistant: COc1cc(-c2ccc3ccccc3c2)cc(-c2ccc3ccccc3c2)c1"
+0,"## User: The molecule is composed of 38 carbon atoms, 2 oxygen atoms, and 1 tellurium atom.
+## Assistant: O=C(Nc1ccc(-c2cc(-c3ccccc3)c(-c3ccc(-c4ccccc4)cc3)cc2-c2ccccc2)cc1)c1ccccc1"
+0,"## User: The molecule has 10 carbon atoms, 2 sulfur atoms, 3 oxygen atoms, 1 nitrogen atom, and 5 antimony atoms.
+## Assistant: 1 sulfur atom, and 1 bromine atom"
+0,"## User: Please generate a molecule composed of 25 carbon atoms and 2 tellurium atoms.
+## Assistant: 2 boron atoms, and 1 amide group"
+0,"## User: The molecule contains 24 carbon atoms.
+## Assistant: 3 oxygen atoms, 3 nitrogen atoms, and 2 sulfur atoms.
+## Assistant: COc1ccc(SCCC(=O)N2CCC(c3nc4ccccc4s3)CC2)cc1"
+0,"## User: Please generate a molecule with 5 carbon atoms and 5 silicon atoms.
+## Assistant: 1 silicon atom"
+0,"## User: Please generate a molecule composed of 15 carbon atoms.
+## Assistant: 1 oxygen atom, 2 nitrogen atoms, and 1 sulfur atom.
+## Assistant: CC1CSCCO1"
+0,"## User: The molecule consists of 30 carbon atoms.
+## Assistant: 1c2ccccc2-c2cc3c(cc21)C(C1C2Cc4ccccc4C2(C)C)N(c1ccccc1)C3=O)C2C1CC1"
+0,"## User: The molecule has 23 carbon atoms and 2 phosphorus atoms.
+## Assistant: 1C(C)CCCCC1P(Cc1ccccc1)C(C)C[PH3+]"
+0,"## User: The molecule contains 5 carbon atoms and 1 chlorine atom.
+## Assistant: C=Cc1cc(Cl)ccc1C"
+0,"## User: There is a molecule with 30 carbon atoms.
+## Assistant: 8c1ccccc1-c1ccc2c(-c3ccc4c5ccccc5c5ccccc5c4c3)nc(-c3ccc4c5ccccc5c5ccc6ccccc6c5ccc4c3)nc2c1"
+0,"## User: The molecule has 36 carbon atoms, 1 tellurium atom, and 2 boron atoms.
+## Assistant: C(C)(C)c1ccc(Br)c2cc(C(C)(C)C)cc(C#Cc3cc(C(C)(C)C)cc4c5cc(C(C)(C)C)ccc5n4c3N)c12"
+0,"## User: There is a molecule with 21 carbon atoms.
+## Assistant: 2 oxygen atoms, 3 nitrogen atoms, and 2 sulfur atoms.
+## Assistant: Cc1cc(C)c(Oc2ccc3c(c2)sc2c4ccccc4c3c2)s1"
+0,"## User: The molecule contains 14 carbon atoms, 4 sulfur atoms, 1 phosphorus atom, and 2 fluorine atoms.
+## Assistant: 1CCc2cc(sc3c(c2c1)CC1(CC1)C3)c(=O)[nH]c1ccccc1-3"
+0,"## User: There is a molecule consisting of 16 carbon atoms and 1 boron atom.
+## Assistant: 1c(Br)cccc1C1C(=O)C(C)(C)C(=O)C1[NH3+]"
+0,"## User: There is a molecule with 38 carbon atoms.
+## Assistant: 10 single bonds, 1 double bond, 8 rotatable bonds, and 18 aromatic bonds.
+## Assistant: COc1ccc(-c2cc(-c3ccc(OC)c(OC)c3)c3ccccc3n2)cc1"
+0,"## User: There is a molecule consisting of 9 carbon atoms and 3 silicon atoms.
+## Assistant: 1 silicon atom, and 2 sulfide atoms"
+0,"## User: Please generate a molecule consisting 10 carbon atoms, 1 fluorine atom, and 5 oxygen atoms.
+## Assistant: 1ccc(F)c2c1NCCN2"
+0,"## User: The molecule is composed of 34 carbon atoms, 2 arsenic atoms, 1 oxygen atom, 4 boron atoms, and 3 phosphorus atoms.
+## Assistant: OCC([NH3+])(c1ccccc1)c1ccc(-c2c(-c3ccc(C(F)(F)F)cc3)ccccc2C(F)(F)F)cc1"
+0,"## User: Please generate a molecule consisting 28 carbon atoms.
+## Assistant: 2 double bonds, and 7 rotatable bonds.
+## Assistant: CC(O)C(C)(C)c1ccc2c(c1)C(C)(C)C1C(=O)C(C)(C)C1CC2"
+0,"## User: There is a molecule consisting of 17 carbon atoms, 2 chlorine atoms, and 3 oxygen atoms.
+## Assistant: 2c(Cl)c3c(c2c1)CCCC(C)C3"
+0,"## User: The molecule contains 33 carbon atoms.
+## Assistant: 3 benzene ring groups, 4 amide groups, and 3 halo groups.
+## Assistant: CNC(=O)c1cc(Cl)ccc1NC(=O)C1CC[NH+](C(C)C(=O)Nc2ccc(C(=O)Nc3ccc(F)c(F)c3)cc2C)CC1"
+0,"## User: Please generate a molecule consisting 24 carbon atoms and 2 silicon atoms.
+## Assistant: 1ccc(C(c2ccc(C#N)cc2)[NH+]2CCC(C(=O)[O-])CC2)cc1"
+0,"## User: The molecule contains 1 carbon atom.
+## Assistant: 1 oxygen atom, and 2 nitrogen atoms.
+## Assistant: CCN1CC(CCO)[NH2+]CC1"
+0,"## User: Please generate a molecule composed of 2 carbon atoms and 3 arsenic atoms.
+## Assistant: 2C(C)(C)CC1OP(=O)(OCC)C(C)(C)C1O"
+0,"## User: The molecule has 20 carbon atoms.
+## Assistant: 2 oxygen atoms, and 2 nitrogen atoms.
+## Assistant: COc1cccc(C2([NH3+])CC2)c1"
+0,"## User: Please generate a molecule composed of 37 carbon atoms.
+## Assistant: O=C(c1cc(-c2ccccc2)c2ccccc2c1)N1CCC(c2ccc(-c3ccccc3)cc2)CC1"
+0,"## User: Please generate a molecule composed of 32 carbon atoms, 1 chlorine atom, 2 oxygen atoms, 4 boron atoms, and 5 bismuth atoms.
+## Assistant: O=C(NC1CC[NH+](Cc2ccc(Cl)cc2)CC1)Nc1ccc(Br)c(Cl)c1"
+0,"## User: The molecule has 35 carbon atoms, 1 fluorine atom, and 5 phosphorus atoms.
+## Assistant: 1C(F)(F)c2ccccc2C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)C(F)(F)F"
+0,"## User: Please generate a molecule composed of 29 carbon atoms.
+## Assistant: 2 benzene ring groups, 2 amide groups, and 2 halo groups.
+## Assistant: CC(C)(C)CC(=O)N1CCCC1C(=O)Nc1ccc(C(=O)Nc2cc(C(F)(F)F)ccc2Cl)cc1"
+0,"## User: The molecule consists of 5 carbon atoms.
+## Assistant: 2 carbon atoms, and 3 oxygen atoms.
+## Assistant: CCOC(=O)C1(C)CC1"
+0,"## User: The molecule has 36 carbon atoms and 2 oxygen atoms.
+## Assistant: c1ccc(-c2cc(-c3ccc(-c4ccc5c(c4)C(C)(C)c4cc(-c6cccc(-c7ccccc7)c6)ccc4-5)cc3)ccc2-c2ccccc2)cc1"
+0,"## User: The molecule has 4 carbon atoms.
+## Assistant: 1 oxygen atom, 2 nitrogen atoms, and 1 chlorine atom.
+## Assistant: C=C(C)CCc1cc(Cl)cnc1N"
+0,"## User: The molecule consists of 3 carbon atoms.
+## Assistant: 1 nitrogen atom, and 2 fluorine atoms.
+## Assistant: Cc1cc(F)cnc1N1CC(C)CC(C)C1"
+0,"## User: The molecule is composed of 16 carbon atoms and 1 nitrogen atom.
+## Assistant: 1(c2ccccc2)CCc2c(cccc21)C(C1C=CC=CC1)c1ccccc1-2"
+0,"## User: The molecule contains 37 carbon atoms and 3 silicon atoms.
+## Assistant: C(Cc1ccccc1)CC1CCC2C(C)(C)CC(C)(C)C2C1"
+0,"## User: Please generate a molecule composed of 13 carbon atoms.
+## Assistant: 6 single bonds, 3 rotatable bonds, and 5 aromatic bonds.
+## Assistant: CC[NH2+]C(c1ccccc1)C1CC1"
+0,"## User: The molecule consists of 28 carbon atoms.
+## Assistant: 4 oxygen atoms, 2 nitrogen atoms, 1 sulfur atom, and 1 chlorine atom.
+## Assistant: CCOC(=O)c1c(NC2CCOCC2)cc2c(Cl)cccc2c1=O"
+0,"## User: Please generate a molecule with 30 carbon atoms and 1 polonium atom.
+## Assistant: 1C(c2ccccc2)C1(C)c1ccc2c(c1)C(Cc1ccccc1)CC2"
+0,"## User: The molecule consists of 26 carbon atoms, 2 oxygen atoms, and 1 sulfur atom.
+## Assistant: CCCCCCCCCCCCCCCCC[N+](C)(C)CC(O)C(=O)CCCCCCCCCCCCCCCCC"
+0,"## User: The molecule is composed of 12 carbon atoms and 1 arsenic atom.
+## Assistant: 2c1c(C)ccc(CS(=O)(=O)CC2CCCO2)c1C"
+0,"## User: Please generate a molecule composed of 36 carbon atoms.
+## Assistant: 1ccc(-c2cc3c(cc2-c2ccccc2)C(=O)N(Cc2ccccc2)c2ccccc2C3=O)cc1"
+0,"## User: Please generate a molecule with 35 carbon atoms, 1 antimony atom, 2 selenium atoms, 3 oxygen atoms, and 4 bromine atoms.
+## Assistant:  O=C(Nc1ccc(Br)c(C(F)(F)F)c1)Nc1ccc(Br)cn1"
