@@ -11,7 +11,7 @@ from tqdm import tqdm
 
 parser = ArgumentParser()
 parser.add_argument("--task", type=str, default="InstructionTuning")
-parser.add_argument("--subtask", type=str, default="BasicProp")
+parser.add_argument("--subtask", type=str, default="AtomNum")
 parser.add_argument("--seed", type=int, default=42)
 parser.add_argument("--num_samples", type=int, default=450000)
 args = parser.parse_args()
@@ -355,51 +355,6 @@ elif args.task == 'MolCustom':
                     instructions[key].append(Other_elements_dict[key])
                 i += 1
         df = pd.DataFrame(instructions)
-        df.to_csv(file_dir + "/test.csv", index=False)
-    elif args.subtask == 'BasicProp':
-        prompt_templates = []
-        prompt_templates.append(["Please generate a molecule with {} property.", "The molecule has {} property.", "There is a molecule with {} property.", "Please generate a {} molecule.", "The molecule is a {} molecule.", "There is a {} molecule.", "The molecule is {}."])
-        prompt_templates.append(["Please generate a molecule with {} and {} properties.", "The molecule has {} and {} properties.", "There is a molecule with {} and {} properties.", "Please generate a molecule with {} and {} properties.", "The molecule is a {} and {} molecule.", "There is a {} and {} molecule.", "The molecule is {} and {}."])
-        prompt_templates.append(["Please generate a molecule with {}, {} and {} properties.", "The molecule has {}, {} and {} properties.", "There is a molecule with {}, {} and {} properties.", "Please generate a molecule with {}, {} and {} properties.", "The molecule is a {}, {} and {} molecule.", "There is a {}, {} and {} molecule.", "The molecule is {}, {} and {}."])
-
-        prop_noun = ["toxicity", "non-toxicity", "high boling point", "low boiling point", "high melting point", "low melting point", "soluble in water", "insoluble in water"]
-        prop_adj = ["toxic", "non-toxic", "high-boiling", "low-boiling", "high-melting", "low-melting", "water-soluble", "water-insoluble", "heavy", "light", "complex", "simple"]
-
-        Instructions = {"Instruction":[], "property":[]}
-        for i in range(0,5000):
-            num_prop = random.randint(1, 3)
-            temp_template = random.choice(prompt_templates[num_prop-1])
-
-            adj_or_noun = random.randint(0, 1)
-
-            props = []
-            if adj_or_noun == 0:
-                box = [0,1,2,3]
-                box_weights = [1, 1, 1, 1]
-                cur_prop = sample_with_weights(box, box_weights, num_prop)
-                for j in range(num_prop):
-                    pos_neg = random.randint(0, 1)
-                    props.append(prop_noun[2*cur_prop[j] + pos_neg])
-            else:
-                box = [0,1,2,3,4,5]
-                box_weights = [1, 1, 1, 1, 1, 1]
-                cur_prop = sample_with_weights(box, box_weights, num_prop)
-                for j in range(num_prop):
-                    pos_neg = random.randint(0, 1)
-                    props.append(prop_adj[2*cur_prop[j] + pos_neg])
-            if num_prop == 1:
-                text = temp_template.format(props[0])
-            elif num_prop == 2:
-                text = temp_template.format(props[0], props[1])
-            else:
-                text = temp_template.format(props[0], props[1], props[2])
-            Instructions["Instruction"].append(text)
-            if num_prop == 1:
-                Instructions["property"].append(props[0])
-            else:
-                Instructions["property"].append(",".join(props))
-
-        df = pd.DataFrame(Instructions)
         df.to_csv(file_dir + "/test.csv", index=False)
     elif args.subtask == 'FunctionalGroup':
         groups = ["benzene rings", "hydroxyl", "anhydride", "aldehyde", "ketone", "carboxyl", "ester", "amide", "amine", "nitro", "halo", "thioether", "nitrile", "thiol", "sulfide", "disulfide", "sulfoxide", "sulfone", "borane"]

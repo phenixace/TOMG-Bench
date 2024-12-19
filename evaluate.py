@@ -62,25 +62,6 @@ if args.benchmark == "open_generation":
                 novelties = calculate_novelty(valid_molecules)
                 print("Novelty: ", sum(novelties) / len(novelties))
                 
-        elif args.subtask == "BasicProp":
-            flags = []
-            valid_molecules = []
-            for idx in tqdm(range(len(data))):
-                flag = 1
-                properties = data["property"][idx].split(",")
-                
-                if mol_prop(target["outputs"][idx], "validity"):
-                    valid_molecules.append(target["outputs"][idx])
-                    for prop in properties:
-                        if False: # TODO: Implement this
-                            flag = 0
-                            break
-                    flags.append(flag)
-            print("Accuracy: ", sum(flags) / len(flags))
-            print("Validty:", len(valid_molecules) / len(flags))
-            if args.calc_novelty:
-                novelties = calculate_novelty(valid_molecules)
-                print("Novelty: ", sum(novelties) / len(novelties))
         elif args.subtask == "FunctionalGroup":
             functional_groups = ['benzene rings', 'hydroxyl', 'anhydride', 'aldehyde', 'ketone', 'carboxyl', 'ester', 'amide', 'amine', 'nitro', 'halo', 'nitrile', 'thiol', 'sulfide', 'disulfide', 'sulfoxide', 'sulfone', 'borane']
             flags = []
