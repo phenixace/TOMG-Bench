@@ -21,16 +21,13 @@ def calculate_similarity(smiles1, smiles2):
     return DataStructs.TanimotoSimilarity(fp1, fp2)
 
 # def calculate_novelty(new_smiles_list):
-#     # 将SMILES转换为指纹矩阵
 #     data = pd.read_csv("./data/sources/zinc250k/zinc250k_selfies.csv")
 #     known_smiles_list = data["smiles"].tolist()
 #     known_fps = np.array([smiles_to_fingerprint(smiles) for smiles in known_smiles_list])
 #     new_fps = np.array([smiles_to_fingerprint(smiles) for smiles in new_smiles_list])
     
-#     # 计算Tanimoto相似度矩阵
 #     similarity_matrix = 1 - pairwise_distances(new_fps, known_fps, metric='jaccard')
     
-#     # 计算novelty
 #     max_similarities = np.max(similarity_matrix, axis=1)
 #     novelties = 1 - max_similarities
     
@@ -44,23 +41,20 @@ def fingerprints_to_tensor(fps):
     return torch.tensor([list(fp) for fp in fps], dtype=torch.float32)
 
 def calculate_novelty(new_smiles_list):
-    # 将SMILES转换为指纹并转换为PyTorch张量
     data = pd.read_csv("./data/sources/zinc250k/zinc250k_selfies.csv")
     known_smiles_list = data["smiles"].tolist()
     known_fps = fingerprints_to_tensor([smiles_to_fingerprint(smiles) for smiles in known_smiles_list])#.cuda()
     new_fps = fingerprints_to_tensor([smiles_to_fingerprint(smiles) for smiles in new_smiles_list])#.cuda()
     
-    # 计算Tanimoto相似度
     dot_product = torch.mm(new_fps, known_fps.t())
     norm_new = new_fps.sum(dim=1).unsqueeze(1)
     norm_known = known_fps.sum(dim=1).unsqueeze(0)
     similarity_matrix = dot_product / (norm_new + norm_known - dot_product)
     
-    # 计算novelty
     max_similarities, _ = similarity_matrix.max(dim=1)
     novelties = 1 - max_similarities
     
-    return novelties.cpu().numpy()  # 将结果从GPU复制回CPU
+    return novelties.cpu().numpy()
 
 
 def mol_prop(mol, prop):

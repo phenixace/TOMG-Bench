@@ -45,6 +45,7 @@ parser.add_argument("--int8", default=False, action="store_true")
 parser.add_argument("--fp16", default=False, action="store_true")
 parser.add_argument("--add_eos", default=True, action="store_false")
 parser.add_argument("--specific_task", type=str, default="")
+parser.add_argument("--scheduler", type=str, default="linear")
 args = parser.parse_args()
 
 args.output_dir = os.path.join(args.output_dir, args.name + "-" + args.data_scale)
@@ -183,11 +184,12 @@ train_args = TrainingArguments(
     save_steps=args.save_interval,
     output_dir=args.output_dir,
     save_total_limit=20,
+    lr_scheduler_type=args.scheduler,
     load_best_model_at_end=False,
     ddp_find_unused_parameters=False if ddp else None,
     # group_by_length=args.group_by_length,
     report_to="wandb",
-    run_name="llama3-{}".format(random.randint(0, 100000)),
+    run_name="omg-{}".format(random.randint(0, 100000)),
 )
 
 trainer = Trainer(

@@ -114,6 +114,7 @@ def main():
         elif args.model_type == "t5":   # for molt5 and biot5
             model = T5ForConditionalGeneration.from_pretrained(args.adapter_path, device_map=device_map)
 
+    model.half()
     model.eval() 
 
     generation_config = GenerationConfig(

@@ -41,6 +41,8 @@ def correct_text(text):
                     s = s.split("=>")[-1].strip()
             if "->" in s:
                 s = s.split("->")[-1].strip()
+            if s[0] == "[" and s[-1] == "]":
+                s = s[1:-1]
             return s
     except Exception as e:
         print(e, text)
@@ -49,9 +51,9 @@ def correct_text(text):
 
 parser = ArgumentParser()
 parser.add_argument("--folder", type=str, default="new_predictions")
-parser.add_argument("--name", type=str, default="llama3-8B")
-parser.add_argument("--task", type=str, default="MolOpt/")
-parser.add_argument("--subtask", type=str, default="LogP")
+parser.add_argument("--name", type=str, default="llama3.1-8B")
+parser.add_argument("--task", type=str, default="MolCustom/")
+parser.add_argument("--subtask", type=str, default="AtomNum")
 args = parser.parse_args()
 
 args.input = "./{}/{}/open_generation/{}/{}.csv".format(args.folder, args.name, args.task, args.subtask)

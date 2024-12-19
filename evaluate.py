@@ -3,19 +3,19 @@ For evaluation
 '''
 import argparse
 import pandas as pd
-from utils.evaluation import mol_prop, calculate_novelty, calculate_similarity, calculate_basic_property
+from utils.evaluation import mol_prop, calculate_novelty, calculate_similarity
 from tqdm import tqdm
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--name", type=str, default="galactica-125M-small")
+parser.add_argument("--name", type=str, default="llama3.1-8B")
 
 # dataset settings
 parser.add_argument("--benchmark", type=str, default="open_generation")
 parser.add_argument("--task", type=str, default="MolCustom")
 parser.add_argument("--subtask", type=str, default="AtomNum")
 
-parser.add_argument("--output_dir", type=str, default="./predictions/")
+parser.add_argument("--output_dir", type=str, default="./new_predictions/")
 parser.add_argument("--calc_novelty", action="store_true", default=False)
 
 args = parser.parse_args()
