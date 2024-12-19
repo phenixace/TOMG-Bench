@@ -5,8 +5,8 @@ A benchmark for evaluating LLMs' performance on **Text-based Open Molecule Gener
 
 Authors: Jiatong Li*, Junxian Li*, Yunqing Liu, Dongzhan Zhou, and Qing Li 
 
-Arxiv: [https://arxiv.org/abs/xxx](https://arxiv.org/abs/xxx)
-Huggingface Dataset: [https://huggingface.co/datasets/Duke-de-Artois/TOMG-Bench](https://huggingface.co/datasets/Duke-de-Artois/TOMG-Bench)
+Arxiv: [https://arxiv.org/abs/xxx](https://arxiv.org/abs/xxx)  
+Huggingface Dataset: [https://huggingface.co/datasets/Duke-de-Artois/TOMG-Bench](https://huggingface.co/datasets/Duke-de-Artois/TOMG-Bench)  
 PaperWithCode: []()
 
 Benchmark Page: []()
