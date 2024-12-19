@@ -11,7 +11,7 @@ Target: Let the LLM edit the molecule. Match if the generated molecule meets the
   - Input: `Please add a hydroxyl group to the molecule CC.`
   - Output: `CCO`
 - **Evaluation Metrics**: 
-  - **Success Rate (MAIN)**: The percentage of generated molecules that meet the requirements. 
+  - **Success Rate (Accuracy) (MAIN)**: The percentage of generated molecules that meet the requirements. 
   - **Molecule Similarity**: The edited molecule should make as few changes as possible to the original molecule.
   - **Molecule Validity**: The percentage of generated molecules that are valid.
 
@@ -23,7 +23,7 @@ Target: Let the LLM edit the molecule. Match if the generated molecule meets the
   - Input: `Please remove a hydroxyl group from the molecule CCO.`
   - Output: `CC`
 - **Evaluation Metrics**: 
-  - **Success Rate (MAIN)**: The percentage of generated molecules that meet the requirements. 
+  - **Success Rate (Accuracy) (MAIN)**: The percentage of generated molecules that meet the requirements. 
   - **Molecule Similarity**: The edited molecule should make as few changes as possible to the original molecule.
   - **Molecule Validity**: The percentage of generated molecules that are valid.
 
@@ -35,6 +35,6 @@ Target: Let the LLM edit the molecule. Match if the generated molecule meets the
   - Input: `Please substitute a hydroxyl group in the molecule CCO with a carboxyl group.`
   - Output: `CCN`
 - **Evaluation Metrics**:
-    - **Success Rate (MAIN)**: The percentage of generated molecules that meet the requirements. 
+    - **Success Rate (Accuracy) (MAIN)**: The percentage of generated molecules that meet the requirements. 
     - **Molecule Similarity**: The edited molecule should make as few changes as possible to the original molecule.
     - **Molecule Validity**: The percentage of generated molecules that are valid.

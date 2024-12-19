@@ -11,7 +11,7 @@ Target: Let the LLM generate the customized molecule. Match if the generated mol
   - Input: `Please generate a molecule with 8 carbon atoms, 1 nitrogen atoms, and 2 oxygen atoms.`
   - Output: `CCCCC(C)NCC(=O)O`
 - **Evaluation Metrics**: 
-  - **Success Rate (MAIN)**: The percentage of generated molecules that meet the requirements. 
+  - **Success Rate (Accuracy) (MAIN)**: The percentage of generated molecules that meet the requirements. 
   - **Molecule Novelty**: The percentage of generated molecules that are novel.
   - **Molecule Validity**: The percentage of generated molecules that are valid.
 
@@ -23,7 +23,7 @@ Target: Let the LLM generate the customized molecule. Match if the generated mol
   - Input: `Please generate a molecule with 2 hydroxyl groups.`
   - Output: `OCCCCO`
 - **Evaluation Metrics**:
-    - **Success Rate (MAIN)**: The percentage of generated molecules that meet the requirements. 
+    - **Success Rate (Accuracy) (MAIN)**: The percentage of generated molecules that meet the requirements. 
     - **Molecule Novelty**: The percentage of generated molecules that are novel.
     - **Molecule Validity**: The percentage of generated molecules that are valid.
 
@@ -35,6 +35,6 @@ Target: Let the LLM generate the customized molecule. Match if the generated mol
   - Input: `Please generate a molecule with 1 single bond.`
   - Output: `CC`
 - **Evaluation Metrics**:
-    - **Success Rate (MAIN)**: The percentage of generated molecules that meet the requirements. 
+    - **Success Rate (Accuracy) (MAIN)**: The percentage of generated molecules that meet the requirements. 
     - **Molecule Novelty**: The percentage of generated molecules that are novel.
     - **Molecule Validity**: The percentage of generated molecules that are valid.

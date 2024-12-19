@@ -11,7 +11,7 @@ Target: Let the LLM edit the molecule and optimize the molecule with specific pr
   - Input: `Please optimize the molecule CCO to have a higher LogP value.`
   - Output: `OCCO`
 - **Evaluation Metrics**: 
-  - **Success Rate (MAIN)**: The percentage of generated molecules that meet the requirements. 
+  - **Success Rate (Accuracy) (MAIN)**: The percentage of generated molecules that meet the requirements. 
   - **Molecule Similarity**: The edited molecule should make as few changes as possible to the original molecule.
   - **Molecule Validity**: The percentage of generated molecules that are valid.
 
@@ -23,7 +23,7 @@ Target: Let the LLM edit the molecule and optimize the molecule with specific pr
   - Input: `Please optimize the molecule CCO to have a higher MR value.`
   - Output: `CCCC`
 - **Evaluation Metrics**: 
-  - **Success Rate (MAIN)**: The percentage of generated molecules that meet the requirements. 
+  - **Success Rate (Accuracy) (MAIN)**: The percentage of generated molecules that meet the requirements. 
   - **Molecule Similarity**: The edited molecule should make as few changes as possible to the original molecule.
   - **Molecule Validity**: The percentage of generated molecules that are valid.
 
@@ -35,6 +35,6 @@ Target: Let the LLM edit the molecule and optimize the molecule with specific pr
   - Input: `Please optimize the molecule CCO to have a higher toxicity.`
   - Output: `CCN`
 - **Evaluation Metrics**:
-    - **Success Rate (MAIN)**: The percentage of generated molecules that meet the requirements. 
+    - **Success Rate (Accuracy) (MAIN)**: The percentage of generated molecules that meet the requirements. 
     - **Molecule Similarity**: The edited molecule should make as few changes as possible to the original molecule.
     - **Molecule Validity**: The percentage of generated molecules that are valid.
