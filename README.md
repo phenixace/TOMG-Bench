@@ -6,7 +6,7 @@ A benchmark for evaluating LLMs' performance on **Text-based Open Molecule Gener
 Authors: Jiatong Li*, Junxian Li*, Yunqing Liu, Dongzhan Zhou, and Qing Li 
 
 Arxiv: [https://arxiv.org/abs/xxx](https://arxiv.org/abs/xxx)
-Huggingface Dataset: []()
+Huggingface Dataset: [https://huggingface.co/datasets/Duke-de-Artois/TOMG-Bench](https://huggingface.co/datasets/Duke-de-Artois/TOMG-Bench)
 PaperWithCode: []()
 
 Benchmark Page: []()
@@ -29,7 +29,7 @@ This repository contains the code for the TOMG-Bench benchmark, which is a bench
   - MR
   - QED
 
-### Metirics
+### Metrics
 We adopt different evaluation metrics for different tasks. The evaluation metrics for each subtask are described in the corresponding subtask's README file.
 
 The leader board is based on the weighted average accuracy metric, which is discussed in our paper.
