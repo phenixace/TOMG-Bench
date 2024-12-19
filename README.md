@@ -7,7 +7,7 @@ Authors: Jiatong Li*, Junxian Li*, Yunqing Liu, Dongzhan Zhou, and Qing Li
 
 Arxiv: [https://arxiv.org/abs/xxx](https://arxiv.org/abs/xxx)  
 Huggingface Dataset: [https://huggingface.co/datasets/Duke-de-Artois/TOMG-Bench](https://huggingface.co/datasets/Duke-de-Artois/TOMG-Bench)  
-PaperWithCode: []()
+PaperWithCode: [https://paperswithcode.com/dataset/tomg-bench](https://paperswithcode.com/dataset/tomg-bench)
 
 Benchmark Page: []()
 
