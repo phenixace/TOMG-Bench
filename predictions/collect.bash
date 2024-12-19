@@ -1,5 +1,5 @@
 name="llama3.2-1B"
-data_scale="large"
+data_scale="xlarge"
 
 for task in 'MolCustom'
 do
