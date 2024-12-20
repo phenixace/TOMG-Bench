@@ -50,4 +50,13 @@ If your model achieves amazing performance on our benchmark and you want to upda
 
 ## Reference
 ```
+@misc{li2024tomgbenchevaluatingllmstextbased,
+      title={TOMG-Bench: Evaluating LLMs on Text-based Open Molecule Generation}, 
+      author={Jiatong Li and Junxian Li and Yunqing Liu and Dongzhan Zhou and Qing Li},
+      year={2024},
+      eprint={2412.14642},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2412.14642}, 
+}
 ```
