@@ -14,6 +14,9 @@ Benchmark Page: []()
 Leaderboard: []()
 
 ## Introduction
+### Pipeline  
+![image](https://github.com/user-attachments/assets/bb9638aa-922c-478b-b5d8-0d33c00f89e3)
+
 ### Dataset Categorization
 This repository contains the code for the TOMG-Bench benchmark, which is a benchmark for evaluating LLMs' performance on Text-based Open Molecule Generation tasks. The benchmark consists of three main tasks. Each task is further divided into three subtasks, and each subtask is composed of 5000 data samples. Below is the dataset categorization:
 * [MolCustom](./data/benchmarks/open_generation/MolCustom/readme.md)
