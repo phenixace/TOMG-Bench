@@ -38,7 +38,7 @@ We adopt different evaluation metrics for different tasks. The evaluation metric
 The leader board is based on the weighted average accuracy metric, which is discussed in our paper.
 
 ### Usage
-1. To query propietary models, please refer to the [query_openai](./query_openai.py).
+1. To query proprietary models, please refer to the [query_openai](./query_openai.py).
 2. To evaluate the performance of an open-source general LLM, please refer to the [run_query_vllm](./run_query_vllm.bash).
 3. To evaluate the performance of a ChEBI-20 fine-tuned LLM, please refer to the [run_query_biot5](./run_query_biot5.bash) and [run_query_molt5](./run_query_molt5.bash).
 4. To train on our OpenMolIns dataset, please refer to the [train](./run_train.bash).
