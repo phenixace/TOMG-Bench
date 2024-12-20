@@ -1,5 +1,5 @@
 # TOMG-Bench
-## Text-based Open Molecule Generation Language Model Benchmark
+## Text-based Open Molecule Generation Benchmark
 
 A benchmark for evaluating LLMs' performance on **Text-based Open Molecule Generation** tasks.
 
