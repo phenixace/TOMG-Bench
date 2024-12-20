@@ -1,8 +1,6 @@
 # TOMG-Bench
 ## Text-based Open Molecule Generation Benchmark
 
-In this paper, we propose **Text-based Open Molecule Generation Benchmark (TOMG-Bench)**, the first benchmark to evaluate the open-domain molecule generation capability of LLMs. TOMG-Bench encompasses a dataset of three major tasks: molecule editing (MolEdit), molecule optimization (MolOpt), and customized molecule generation (MolCustom). Each task further contains three subtasks, with each subtask comprising 5,000 test samples. Given the inherent complexity of open molecule generation, we have also developed an automated evaluation system that helps measure both the quality and the accuracy of the generated molecules. Our comprehensive benchmarking of 25 LLMs reveals the current limitations and potential areas for improvement in text-guided molecule discovery. Furthermore, with the assistance of OpenMolIns, a specialized instruction tuning dataset proposed for solving challenges raised by TOMG-Bench, Llama3.1-8B could outperform all the open-source general LLMs, even surpassing GPT-3.5-turbo by 46.5% on TOMG-Bench.
-
 Authors: Jiatong Li*, Junxian Li*, Yunqing Liu, Dongzhan Zhou, and Qing Li （* Equal Contribution)
 
 Arxiv: [https://arxiv.org/abs/2412.14642](https://arxiv.org/abs/2412.14642)  
@@ -14,6 +12,8 @@ Benchmark Page: []()
 Leaderboard: []()
 
 ## Introduction
+In this paper, we propose **Text-based Open Molecule Generation Benchmark (TOMG-Bench)**, the first benchmark to evaluate the open-domain molecule generation capability of LLMs. TOMG-Bench encompasses a dataset of three major tasks: molecule editing (MolEdit), molecule optimization (MolOpt), and customized molecule generation (MolCustom). Each task further contains three subtasks, with each subtask comprising 5,000 test samples. Given the inherent complexity of open molecule generation, we have also developed an automated evaluation system that helps measure both the quality and the accuracy of the generated molecules. Our comprehensive benchmarking of 25 LLMs reveals the current limitations and potential areas for improvement in text-guided molecule discovery. Furthermore, with the assistance of OpenMolIns, a specialized instruction tuning dataset proposed for solving challenges raised by TOMG-Bench, Llama3.1-8B could outperform all the open-source general LLMs, even surpassing GPT-3.5-turbo by 46.5% on TOMG-Bench.
+
 ### Pipeline  
 ![image](https://github.com/user-attachments/assets/bb9638aa-922c-478b-b5d8-0d33c00f89e3)
 
