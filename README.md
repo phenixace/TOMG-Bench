@@ -1,7 +1,7 @@
 # TOMG-Bench
-[![PWC](https://img.shields.io/badge/PWC-Dataset-blue)](https://paperswithcode.com/dataset/tomg-bench)
-[![Hugging Face Datasets](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Datasets-blue)](https://huggingface.co/datasets/Duke-de-Artois/TOMG-Bench)
 [![arxiv.org](http://img.shields.io/badge/cs.CV-arXiv%3A2412.14542-B31B1B.svg)](https://arxiv.org/abs/2412.14642)
+[![Hugging Face Datasets](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Datasets-blue)](https://huggingface.co/datasets/Duke-de-Artois/TOMG-Bench)
+[![PaperWithCode](https://img.shields.io/badge/PWC-Dataset-blue)](https://paperswithcode.com/dataset/tomg-bench)
 
 ## Text-based Open Molecule Generation Benchmark
 
