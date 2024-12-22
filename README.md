@@ -35,10 +35,10 @@ This repository contains the code for the TOMG-Bench benchmark, which is a bench
 ### Metrics
 We adopt different evaluation metrics for different tasks. The evaluation metrics for each subtask are described in the corresponding subtask's README file.
 
-The leader board is based on the weighted average accuracy metric, which is discussed in our paper.
+The leaderboard is based on the weighted average accuracy metric, which is discussed in our paper.
 
 ### Usage
-1. To query propietary models, please refer to the [query_openai](./query_openai.py).
+1. To query proprietary models, please refer to the [query_openai](./query_openai.py).
 2. To evaluate the performance of an open-source general LLM, please refer to the [run_query_vllm](./run_query_vllm.bash).
 3. To evaluate the performance of a ChEBI-20 fine-tuned LLM, please refer to the [run_query_biot5](./run_query_biot5.bash) and [run_query_molt5](./run_query_molt5.bash).
 4. To train on our OpenMolIns dataset, please refer to the [train](./run_train.bash).
@@ -46,7 +46,7 @@ The leader board is based on the weighted average accuracy metric, which is disc
 
 ### Submit Your Model
 
-If your model achieves amazing performance on our benchmark and you want to update the leaderboard, please send us your results (including raw files) via our emails. We will help you update the leaderboard once we verified the results.
+If your model achieves amazing performance on our benchmark and you want to update the leaderboard, please send us your results (including raw files) via our emails. We will help you update the leaderboard once we have verified the results.
 
 ## Reference
 ```
