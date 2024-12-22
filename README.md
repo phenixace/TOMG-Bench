@@ -1,4 +1,8 @@
 # TOMG-Bench
+[![PWC](https://img.shields.io/badge/PWC-Dataset-blue)](https://paperswithcode.com/dataset/tomg-bench)
+[![Hugging Face Datasets](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Datasets-blue)](https://huggingface.co/datasets/Duke-de-Artois/TOMG-Bench)
+[![arxiv.org](http://img.shields.io/badge/cs.CV-arXiv%3A2412.14542-B31B1B.svg)](https://arxiv.org/abs/2412.14642)
+
 ## Text-based Open Molecule Generation Benchmark
 
 Authors: Jiatong Li*, Junxian Li*, Yunqing Liu, Dongzhan Zhou, and Qing Li （* Equal Contribution)
