@@ -71,10 +71,13 @@ The leaderboard is based on the weighted average accuracy metric, which is discu
 
 ### Usage
 1. To query proprietary models, please refer to the [query_openai](./query_openai.py).
-2. To evaluate the performance of an open-source general LLM, please refer to the [run_query_vllm](./run_query_vllm.bash).
+2. To evaluate the performance of an open-source general LLM, please refer to the [run_query_8b](./run_query_copy_8b.bash). Remember to use your own model path!    
 3. To evaluate the performance of a ChEBI-20 fine-tuned LLM, please refer to the [run_query_biot5](./run_query_biot5.bash) and [run_query_molt5](./run_query_molt5.bash).
 4. To train on our OpenMolIns dataset, please refer to the [train](./run_train.bash).
 5. To evaluate your model on our benchmark, please refer to the [run_query_template](./run_query_template.bash).
+6. After generating the csv file with anwsers from various models, please run the following command to get the score. If you set ```calc_novelty``` to True, it's necessary for you to assign a GPU for this evaluation.  
+```python evaluate.py --name your_models_name --task xxx(MolCustom, MolOpt or MolEdit) --subtask xxx```
+
 
 ### Submit Your Model
 
