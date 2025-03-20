@@ -71,7 +71,7 @@ The leaderboard is based on the weighted average accuracy metric, which is discu
 
 ### Usage
 1. To query proprietary models, please refer to the [query_openai](./query_openai.py).
-2. To evaluate the performance of an open-source general LLM, please refer to the [run_query_8b](./run_query_copy_8b.bash). Remember to use your own model path!    
+2. To evaluate the performance of an open-source general LLM, please refer to the [run_query_8b](./run_query_copy_8B.bash). Remember to use your own model path!    
 3. To evaluate the performance of a ChEBI-20 fine-tuned LLM, please refer to the [run_query_biot5](./run_query_biot5.bash) and [run_query_molt5](./run_query_molt5.bash).
 4. To train on our OpenMolIns dataset, please refer to the [train](./run_train.bash).
 5. To evaluate your model on our benchmark, please refer to the [run_query_template](./run_query_template.bash).
