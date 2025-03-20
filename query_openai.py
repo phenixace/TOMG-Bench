@@ -75,7 +75,7 @@ print(inference_dataset[0])
 print("Total length of the dataset:", len(inference_dataset))
 print("==============================")
 
-Baseurl = "https://api.claudeshop.top"
+Baseurl = "your direct or transit website url"
 if "gpt" in args.model:
     Skey = "sk-" # your api key here
 else:
@@ -97,7 +97,7 @@ payload = json.dumps({
 })
 """
 
-url = Baseurl + "/v1/chat/completions"
+url = Baseurl + "/v1/chat/completions"  #your own complete url  
 headers = {
    'Accept': 'application/json',
    'Authorization': f'Bearer {Skey}',
