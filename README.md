@@ -2,6 +2,8 @@
 [![arxiv.org](http://img.shields.io/badge/cs.CV-arXiv%3A2412.14542-B31B1B.svg)](https://arxiv.org/abs/2412.14642)
 [![Hugging Face Datasets](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Datasets-blue)](https://huggingface.co/datasets/Duke-de-Artois/TOMG-Bench)
 
+## This repo is a legacy repo. Please visit https://github.com/phenixace/S2-TOMG-Bench for HuggingFace Datasets compatible codes.
+
 ## Text-based Open Molecule Generation Benchmark
 
 Authors: Jiatong Li*, Junxian Li*, Yunqing Liu, Changmeng Zheng, Xiao-Yong Wei, Dongzhan Zhou, and Qing Li （* Equal Contribution)
