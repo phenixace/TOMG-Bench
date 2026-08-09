@@ -1,5 +1,5 @@
 # Speak-to-Structure: Evaluating LLMs in Open-domain Natural Language-Driven Molecule Generation
-[![Conference Version](https://img.shields.io/badge/kdd2026-blue)](https://dl.acm.org/doi/10.1145/3770855.3817473)
+[![Conference Version](http://img.shields.io/badge/Conference-kdd2026-blue.svg)](https://dl.acm.org/doi/10.1145/3770855.3817473)
 [![arxiv.org](http://img.shields.io/badge/cs.CV-arXiv%3A2412.14542-B31B1B.svg)](https://arxiv.org/abs/2412.14642)
 [![Hugging Face Datasets](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Datasets-blue)](https://huggingface.co/datasets/Duke-de-Artois/TOMG-Bench)
 
